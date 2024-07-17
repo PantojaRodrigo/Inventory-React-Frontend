@@ -1,21 +1,32 @@
 import "./App.css";
 import Inventory, { loader as itemsLoader } from "./routes/Inventory";
 
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import NewItem from "./routes/NewItem";
+import RootLayout from "./routes/RootLayout";
+import ItemDetail, { loader as itemLoader } from "./routes/ItemDetail";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Inventory />,
-    loader: itemsLoader,
-    /* children: [
-      { path: "/create-post", element: <NewPost />, action: newPostAction },
+    path: "/items",
+    element: <Outlet />,
+    /* errorElement: <ErrorPage />, */
+    children: [
       {
-        path: "/:postId",
-        element: <PostDetails />,
-        loader: postDetailsLoader,
+        index: true,
+        element: <Inventory />,
+        loader: itemsLoader,
       },
-    ], */
+      {
+        path: "newItem",
+        element: <NewItem />,
+      },
+      {
+        path: ":itemId",
+        element: <ItemDetail />,
+        loader: itemLoader,
+      },
+    ],
   },
 ]);
 

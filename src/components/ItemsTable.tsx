@@ -14,9 +14,10 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import Item from "../interfaces/Item.jsx";
 import { TableHead } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -94,11 +95,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export default function ItemsTable() {
+export default function ItemsTable({ items }: { items: Item[] }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const items = useLoaderData() as Item[];
+  const navigate = useNavigate();
 
   // Avoid a layout jump when reaching the last page with empty items.
   const emptyRows =
@@ -121,18 +121,16 @@ export default function ItemsTable() {
   return (
     <TableContainer component={Paper}>
       <Table
-        sx={{ minWidth: 500 }}
+        sx={{ minWidth: 400 }}
         aria-label="custom pagination table"
         stickyHeader
       >
         <TableHead>
           <TableRow>
-            <TableCell>Id</TableCell>
-            <TableCell align="right">Nombre</TableCell>
-            <TableCell align="right">Descripcion</TableCell>
-            <TableCell align="right">Estado</TableCell>
-            <TableCell align="right">Direccion</TableCell>
-            <TableCell align="right">Numero</TableCell>
+            <TableCell align="center">Id</TableCell>
+            <TableCell align="left">Nombre</TableCell>
+            <TableCell align="left">Descripcion</TableCell>
+            <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -141,23 +139,32 @@ export default function ItemsTable() {
             : items
           ).map((item) => (
             <TableRow key={item.itemId}>
-              <TableCell component="th" scope="item">
+              <TableCell
+                onClick={() => navigate(`${item.itemId}`)}
+                align="center"
+              >
                 {item.itemId}
               </TableCell>
-              <TableCell component="th" scope="item">
+              <TableCell
+                onClick={() => navigate(`${item.itemId}`)}
+                align="left"
+              >
                 {item.itemName}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell
+                onClick={() => navigate(`${item.itemId}`)}
+                align="left"
+              >
                 {item.description}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {item.location.state}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {item.location.address}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {item.location.phoneNumber}
+              <TableCell align="right">
+                <IconButton
+                  aria-label="delete"
+                  edge="start"
+                  sx={{ color: "black", "&:hover": { color: "red" } }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -171,7 +178,7 @@ export default function ItemsTable() {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={3}
+              colSpan={4}
               count={items.length}
               rowsPerPage={rowsPerPage}
               page={page}
