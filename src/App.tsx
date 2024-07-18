@@ -1,9 +1,11 @@
 import "./App.css";
-import Inventory, { loader as itemsLoader } from "./routes/Inventory";
+import Inventory, {
+  loader as itemsLoader,
+  action as itemDeleteAction,
+} from "./routes/Inventory";
 
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import NewItem, { action as itemAction } from "./routes/NewItem";
-import RootLayout from "./routes/RootLayout";
 import ItemDetail, { loader as itemLoader } from "./routes/ItemDetail";
 
 const router = createBrowserRouter([
@@ -16,6 +18,7 @@ const router = createBrowserRouter([
         index: true,
         element: <Inventory />,
         loader: itemsLoader,
+        action: itemDeleteAction,
       },
       {
         path: "newItem",

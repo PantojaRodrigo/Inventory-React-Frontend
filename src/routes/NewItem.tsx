@@ -231,7 +231,7 @@ export default function NewItem() {
 
       <Snackbar
         open={openSnack}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={handleSnackClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
@@ -319,3 +319,4 @@ function validateForm(formData: FormData): ErrorMap {
     errors.state = "State is required";
   return errors;
 }
+//TODO VALIDATE NUMBER
