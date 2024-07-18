@@ -5,6 +5,7 @@ import axios from "axios";
 import { Params, useLoaderData } from "react-router-dom";
 import Item from "../interfaces/Item";
 import { Container } from "@mui/material";
+import type { LoaderFunction } from "react-router-dom";
 
 export default function ItemDetail() {
   const item = useLoaderData() as Item;
@@ -35,17 +36,11 @@ export default function ItemDetail() {
   );
 }
 
-export function loader({
-  request,
-  params,
-}: {
-  request: Request;
-  params: Params;
-}) {
+export const loader: LoaderFunction = ({ request, params }) => {
   const id = params.itemId;
   const data = axios
     .get("http://localhost:8080/items/" + id)
     .then((res) => res.data);
   return data;
   //TODO ERROR HANDLING
-}
+};
