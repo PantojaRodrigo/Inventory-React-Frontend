@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Container,
   Dialog,
@@ -6,6 +7,7 @@ import {
   DialogTitle,
   Grid,
   InputAdornment,
+  Snackbar,
   TextField,
 } from "@mui/material";
 import ItemsTable from "../components/ItemsTable";
@@ -13,23 +15,29 @@ import {
   ActionFunction,
   Form,
   Link,
+  LoaderFunction,
   useActionData,
   useLoaderData,
+  useNavigate,
 } from "react-router-dom";
 import Fab from "@mui/material/Fab";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import Item from "../interfaces/Item";
 import React from "react";
+import SearchField from "../components/SearchField";
 
 export default function Inventory() {
   const items = useLoaderData() as Item[];
-  const data = useActionData();
-  //console.log("Data: " + data);
-
+  const res = useActionData() as AxiosResponse;
   const [modalOpen, setModalOpen] = React.useState(0);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  let sts = 0;
+  if (res !== undefined) sts = res.status;
 
   function handleModalClose() {
     setModalOpen(0);
@@ -37,20 +45,27 @@ export default function Inventory() {
   function handleModalOpen(itemId: number) {
     setModalOpen(itemId);
   }
-
+  const handleSnackClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackOpen(false);
+  };
   React.useEffect(() => {
-    /* if (response && response.status == 200) {
-      setOpenSnack(true);
-    } */
     if (modalOpen !== 0) {
       console.log("   Cerrando Modal...");
-
       handleModalClose();
+      setSnackOpen(true);
     }
-  }, [data]);
+  }, [items]);
 
   console.log("Renderizando inventory...");
-
+  function search(str: string) {
+    navigate("/items?search=" + str);
+  }
   return (
     <>
       <Container maxWidth="md">
@@ -68,22 +83,7 @@ export default function Inventory() {
             </Typography>
           </Grid>
           <Grid item xs={5} md={3} sx={{ my: "auto" }} minWidth={50}>
-            <TextField
-              id="search-input"
-              label="Search"
-              size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    sx={{ color: "action.active", ml: -1, my: "auto" }}
-                  >
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ marginY: "auto", pl: 0 }}
-            />
+            <SearchField searchFn={search}></SearchField>
           </Grid>
           <Grid item>
             <Link to="newItem">
@@ -125,18 +125,37 @@ export default function Inventory() {
           </Form>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackClose}
+          severity={sts > 299 ? "error" : "success"}
+          //variant="outlined"
+          sx={{ width: "100%" }}
+        >
+          {sts > 299 ? "Operation failed" : "Item deleted!"}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
 
-export function loader() {
+export const loader: LoaderFunction = ({ request, params }) => {
   console.log("   Recibiendo inventario...");
+  const search = new URL(request.url).searchParams.get("search");
+  let searchState = "";
+  if (search) searchState = "?state=" + search;
+
   const response = axios
-    .get("http://localhost:8080/items")
+    .get("http://localhost:8080/items" + searchState)
     .then((res) => res.data);
 
   return response;
-}
+};
 export const action: ActionFunction = async ({ request, params }) => {
   console.log("   Recibiendo form...");
 
@@ -144,19 +163,9 @@ export const action: ActionFunction = async ({ request, params }) => {
   const itemId = formData.get("itemId");
   console.log("   Enviando delete...");
   const url = "http://localhost:8080/items/" + itemId;
-  let response = axios
-    .delete(url)
-    .then((res) => res.data)
-    .catch(function (error) {
-      if (error.response) {
-        return error.response;
-      } else if (error.request) {
-        return error.request;
-      } else {
-        return error.message;
-      }
-      //console.log(error.config);
-    });
+  let response = await axios.delete(url).catch(function (error) {
+    return error.response;
+  });
   console.log("   Delete completado...");
   return response;
 };

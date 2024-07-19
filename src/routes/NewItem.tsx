@@ -238,7 +238,7 @@ export default function NewItem() {
         <Alert
           onClose={handleSnackClose}
           severity="success"
-          variant="filled"
+          //variant="filled"
           sx={{ width: "100%" }}
         >
           Item added successful!
