@@ -6,14 +6,12 @@ import {
   DialogActions,
   DialogTitle,
   Grid,
-  InputAdornment,
   Snackbar,
-  TextField,
 } from "@mui/material";
-import ItemsTable from "../components/ItemsTable";
 import {
   ActionFunction,
   Form,
+  json,
   Link,
   LoaderFunction,
   useActionData,
@@ -23,15 +21,14 @@ import {
 import Fab from "@mui/material/Fab";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import SearchIcon from "@mui/icons-material/Search";
 import Item from "../interfaces/Item";
 import React from "react";
+import ItemsTable from "../components/ItemsTable";
 import SearchField from "../components/SearchField";
 
 export default function Inventory() {
   const items = useLoaderData() as Item[];
-  const res = useActionData() as AxiosResponse;
+  const res = useActionData() as Response;
   const [modalOpen, setModalOpen] = React.useState(0);
   const [snackOpen, setSnackOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -114,12 +111,7 @@ export default function Inventory() {
 
           <Form method="delete" replace>
             <input name="itemId" defaultValue={modalOpen} hidden />
-            <Button
-              //onClick={() => handleDeleteItem(modalOpen)}
-              autoFocus
-              variant="contained"
-              type="submit"
-            >
+            <Button autoFocus variant="contained" type="submit">
               Yes
             </Button>
           </Form>
@@ -144,28 +136,38 @@ export default function Inventory() {
   );
 }
 
-export const loader: LoaderFunction = ({ request, params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
   console.log("   Recibiendo inventario...");
   const search = new URL(request.url).searchParams.get("search");
   let searchState = "";
   if (search) searchState = "?state=" + search;
 
-  const response = axios
-    .get("http://localhost:8080/items" + searchState)
-    .then((res) => res.data);
-
-  return response;
+  try {
+    const response = await fetch("http://localhost:8080/items" + searchState);
+    if (!response.ok) {
+      throw json({ message: "Error loading the inventory" }, { status: 500 });
+    }
+    return response;
+  } catch (error) {
+    console.log("   Error al enviar request...");
+    throw json({ message: "Error loading the inventory" }, { status: 500 });
+  }
 };
 export const action: ActionFunction = async ({ request, params }) => {
-  console.log("   Recibiendo form...");
+  //console.log("   Recibiendo form...");
 
   const formData = await request.formData();
   const itemId = formData.get("itemId");
-  console.log("   Enviando delete...");
+  //console.log("   Enviando delete...");
   const url = "http://localhost:8080/items/" + itemId;
-  let response = await axios.delete(url).catch(function (error) {
-    return error.response;
-  });
-  console.log("   Delete completado...");
-  return response;
+
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+    });
+
+    return response;
+  } catch (error) {
+    throw json({ message: "Error al mandar la solicitud" }, { status: 500 });
+  }
 };

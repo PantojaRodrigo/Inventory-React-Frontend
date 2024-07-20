@@ -2,9 +2,10 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import { Params, useLoaderData } from "react-router-dom";
+import { json, Params, useLoaderData, useNavigate } from "react-router-dom";
 import Item from "../interfaces/Item";
 import {
+  Button,
   Card,
   Chip,
   Container,
@@ -18,6 +19,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 
 export default function ItemDetail() {
   const item = useLoaderData() as Item;
+  const navigate = useNavigate();
   return (
     <Container sx={{ width: "100%", maxWidth: 500, mt: 5 }}>
       <Card variant="outlined" sx={{ maxWidth: 360 }}>
@@ -77,6 +79,11 @@ export default function ItemDetail() {
           </Stack>
         </Box>
       </Card>
+      <Box alignItems="flex-end">
+        <Button onClick={() => navigate("/items")} autoFocus>
+          Back to inventory
+        </Button>
+      </Box>
     </Container>
   );
 }
@@ -85,7 +92,17 @@ export const loader: LoaderFunction = ({ request, params }) => {
   const id = params.itemId;
   const data = axios
     .get("http://localhost:8080/items/" + id)
-    .then((res) => res.data);
+    .then((res) => res.data)
+    .catch(function (error) {
+      if (error.request) {
+        console.log("   Error al enviar request...");
+        throw json(
+          { message: "Could not find resource or page." },
+          { status: 500 }
+        );
+      }
+      return error.response;
+    });
   return data;
   //TODO ERROR HANDLING
 };

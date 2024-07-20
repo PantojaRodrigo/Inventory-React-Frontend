@@ -4,31 +4,50 @@ import Inventory, {
   action as itemDeleteAction,
 } from "./routes/Inventory";
 
-import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Outlet,
+  RouterProvider,
+  createBrowserRouter,
+  redirect,
+} from "react-router-dom";
 import NewItem, { action as itemAction } from "./routes/NewItem";
 import ItemDetail, { loader as itemLoader } from "./routes/ItemDetail";
+import ErrorPage from "./routes/ErrorPage";
 
 const router = createBrowserRouter([
   {
-    path: "/items",
+    path: "/",
     element: <Outlet />,
-    /* errorElement: <ErrorPage />, */
+    errorElement: <ErrorPage />,
+    loader: ({ request }) => {
+      const url = new URL(request.url).pathname;
+      if (url === "/") return redirect("/items");
+      return null;
+    },
     children: [
       {
-        index: true,
-        element: <Inventory />,
-        loader: itemsLoader,
-        action: itemDeleteAction,
-      },
-      {
-        path: "newItem",
-        element: <NewItem />,
-        action: itemAction,
-      },
-      {
-        path: ":itemId",
-        element: <ItemDetail />,
-        loader: itemLoader,
+        path: "items",
+        element: <Outlet />,
+        errorElement: <ErrorPage />,
+        children: [
+          {
+            index: true,
+            element: <Inventory />,
+            loader: itemsLoader,
+            action: itemDeleteAction,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "newItem",
+            element: <NewItem />,
+            action: itemAction,
+          },
+          {
+            path: ":itemId",
+            element: <ItemDetail />,
+            loader: itemLoader,
+          },
+        ],
       },
     ],
   },

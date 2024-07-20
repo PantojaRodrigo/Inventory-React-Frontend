@@ -6,9 +6,6 @@ import debounce from "@mui/material";
 export default function SearchField({ searchFn }: { searchFn: Function }) {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const lastChange = useRef<NodeJS.Timeout>();
-  console.log("Renderizando campo de busqueda...");
-
-  console.log("Search term: " + searchTerm);
   useEffect(() => {
     const handler = setTimeout(() => {
       searchFn(searchTerm);
@@ -28,16 +25,7 @@ export default function SearchField({ searchFn }: { searchFn: Function }) {
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    /* if (lastChange.current) {
-      clearTimeout(lastChange.current);
-    } */
     setSearchTerm(event.target.value);
-
-    /* lastChange.current = setTimeout(() => {
-      lastChange.current = undefined;
-
-      searchFn(searchTerm);
-    }, 500); */
   };
   return (
     <TextField

@@ -15,9 +15,15 @@ import {
   ListItem,
   ListItemText,
   Snackbar,
-  useMediaQuery,
 } from "@mui/material";
-import { ActionFunction, Form, Link, useActionData } from "react-router-dom";
+import {
+  ActionFunction,
+  Form,
+  json,
+  Link,
+  useActionData,
+  useNavigate,
+} from "react-router-dom";
 import axios, { AxiosResponse } from "axios";
 import Item, { Location } from "../interfaces/Item";
 interface ErrorMap {
@@ -34,6 +40,7 @@ export default function NewItem() {
   const { modal = false, errors = {}, response = undefined } = actionData || {};
   const [openSnack, setOpenSnack] = React.useState(false);
   const form = React.useRef<HTMLFormElement>(null);
+  const navigate = useNavigate();
 
   console.log("Rendering newItem.tsx");
   console.log(response?.status);
@@ -93,11 +100,16 @@ export default function NewItem() {
   }
   return (
     <>
+      <Box>
+        <Button onClick={() => navigate("/items")} autoFocus>
+          Back to inventory
+        </Button>
+      </Box>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 6,
+            marginTop: 2,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -210,6 +222,7 @@ export default function NewItem() {
           </Form>
         </Box>
       </Container>
+
       <Dialog
         open={modalOpen}
         onClose={handleModalClose}
@@ -282,11 +295,12 @@ export const action: ActionFunction = async ({ request, params }) => {
         response = error.response;
       } else if (error.request) {
         modal = false;
-        //console.log(error.request);
+        throw json(
+          { message: "Error sending the request to add the Item" },
+          { status: 500 }
+        );
       } else {
-        //console.log("Error", error.message);
       }
-      //console.log(error.config);
     });
 
   const responseCust: ResponseCust = {
@@ -319,4 +333,3 @@ function validateForm(formData: FormData): ErrorMap {
     errors.state = "State is required";
   return errors;
 }
-//TODO VALIDATE NUMBER
