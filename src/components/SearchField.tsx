@@ -30,7 +30,7 @@ export default function SearchField({ searchFn }: { searchFn: Function }) {
   return (
     <TextField
       id="search-input"
-      label="Search"
+      label="Search items by state"
       size="small"
       value={searchTerm}
       onChange={handleOnChange}

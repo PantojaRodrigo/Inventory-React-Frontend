@@ -59,10 +59,10 @@ export default function Inventory() {
     }
   }, [items]);
 
-  console.log("Renderizando inventory...");
-  function search(str: string) {
+  //console.log("Renderizando inventory...");
+  const search = (str: string) => {
     navigate("/items?search=" + str);
-  }
+  };
   return (
     <>
       <Container maxWidth="md">
@@ -95,6 +95,21 @@ export default function Inventory() {
           handleModalOpen={handleModalOpen}
         ></ItemsTable>
       </Container>
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackClose}
+          severity={sts > 299 ? "error" : "success"}
+          //variant="outlined"
+          sx={{ width: "100%" }}
+        >
+          {sts > 299 ? "Operation failed" : "Item deleted!"}
+        </Alert>
+      </Snackbar>
       <Dialog
         open={modalOpen !== 0}
         onClose={handleModalClose}
@@ -117,21 +132,6 @@ export default function Inventory() {
           </Form>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={snackOpen}
-        autoHideDuration={2000}
-        onClose={handleSnackClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleSnackClose}
-          severity={sts > 299 ? "error" : "success"}
-          //variant="outlined"
-          sx={{ width: "100%" }}
-        >
-          {sts > 299 ? "Operation failed" : "Item deleted!"}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

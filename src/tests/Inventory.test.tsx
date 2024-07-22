@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import Inventory from "../routes/Inventory";
@@ -101,13 +101,14 @@ global.fetch = jest.fn((url) => {
   }
   return Promise.reject(new Error("Unknown endpoint"));
 }) as jest.Mock;
+const mockNavigate = jest.fn();
 // Mock the dependencies
-/* jest.mock("react-router-dom", () => ({
+jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useLoaderData: jest.fn(),
-  useActionData: jest.fn(),
-  useNavigate: jest.fn(),
-})); */
+  /* useLoaderData: jest.fn(),
+  useActionData: jest.fn(), */
+  //useNavigate: () => mockNavigate,
+}));
 
 // Define rutas y elementos de prueba
 const routes = [
@@ -118,6 +119,8 @@ const routes = [
     action: async ({ request }: { request: Request }) => {
       const formData = await request.formData();
       const itemId = formData.get("itemId");
+      console.log("Llamando accion...");
+
       // Simular eliminación de item
       return json({ message: "eliminado con exito" }, { status: 200 });
     },
@@ -157,74 +160,100 @@ jest.mock("../components/SearchField", () => ({
 }));
 
 const mockResponse = { status: 200 };
-
+const router = createMemoryRouter(routes, {
+  initialEntries: ["/"],
+});
 describe("Inventory component", () => {
-  /* beforeEach(() => {
-    (require("react-router-dom").useLoaderData as jest.Mock).mockReturnValue(
-      mockItems
-    );
-    (require("react-router-dom").useActionData as jest.Mock).mockReturnValue(
-      mockResponse
-    );
-  }); */
-
-  /* test("renders the component correctly", () => {
-    render(<Inventory />, { wrapper: MemoryRouter });
-
-    expect(screen.getByText(/Showing 6 items/i)).toBeInTheDocument();
-    expect(screen.getByText("ItemsTable")).toBeInTheDocument();
+  beforeEach(() => {
+    render(<RouterProvider router={router} />);
   });
 
-  */
-  test("open and closes the modal", async () => {
-    const router = createMemoryRouter(routes, {
-      initialEntries: ["/"],
+  test("renders the component correctly", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Showing 6 items")).toBeInTheDocument();
+      expect(screen.getByText(/ItemsTable/i)).toBeInTheDocument();
     });
+  });
 
-    render(<RouterProvider router={router} />);
-
+  test("open and closes the modal", async () => {
     await waitFor(() =>
       expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
     );
 
     const deleteButton = screen.getAllByLabelText("delete")[0];
-
-    fireEvent.click(deleteButton);
+    act(() => {
+      fireEvent.click(deleteButton);
+    });
 
     expect(
       screen.getByText(/Are you sure you want to delete this item\?/i)
     ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("No"));
+    act(() => {
+      fireEvent.click(screen.getByText("No"));
+    });
     await waitFor(() =>
       expect(
         screen.queryByText(/Are you sure you want to delete this item\?/i)
       ).not.toBeInTheDocument()
     );
   });
-  /* test("handles snackbar visibility", async () => {
-    render(<Inventory />, { wrapper: MemoryRouter });
 
-    fireEvent.click(screen.getByText("Item 1"));
-
+  test("open the modal and deletes the item", async () => {
     await waitFor(() =>
-      expect(screen.queryByText(/Item deleted!/i)).toBeInTheDocument()
+      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
     );
 
-    fireEvent.click(screen.getByRole("alert").querySelector("button")!);
-    await waitFor(() =>
-      expect(screen.queryByText(/Item deleted!/i)).not.toBeInTheDocument()
-    );
-  });
-
-  test("search function triggers navigation", () => {
-    const navigate = require("react-router-dom").useNavigate();
-    render(<Inventory />, { wrapper: MemoryRouter });
-
-    fireEvent.change(screen.getByTestId("search-field"), {
-      target: { value: "test" },
+    const deleteButton = screen.getAllByLabelText("delete")[0];
+    act(() => {
+      fireEvent.click(deleteButton);
     });
 
-    expect(navigate).toHaveBeenCalledWith("/items?search=test");
-  });  */
+    expect(
+      screen.getByText(/Are you sure you want to delete this item\?/i)
+    ).toBeInTheDocument();
+
+    const spyAction = jest.spyOn(routes[0], "action");
+
+    act(() => {
+      fireEvent.click(screen.getByText("Yes"));
+    });
+    console.log(spyAction.mockImplementation);
+
+    await waitFor(() => {
+      expect(spyAction).toHaveBeenCalledTimes(1);
+      /* const formData = new FormData();
+      formData.set("itemId", "111");
+      expect(spyAction).toHaveBeenCalledWith(
+        expect.objectContaining({ request: expect.anything() })
+      ); */
+      expect(screen.queryByText(/Item deleted!/i)).toBeInTheDocument();
+    });
+  });
+
+  test("search function triggers navigation", async () => {
+    await waitFor(() =>
+      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
+    );
+    act(() => {
+      fireEvent.change(screen.getByTestId("search-field"), {
+        target: { value: "test" },
+      });
+    });
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe("/items");
+      expect(router.state.location.search).toBe("?search=test");
+    });
+  });
+
+  test("open Add Item page", async () => {
+    await waitFor(() =>
+      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("add"));
+    });
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe("/items/newItem");
+    });
+  });
 });

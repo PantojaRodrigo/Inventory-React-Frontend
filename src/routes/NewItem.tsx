@@ -29,10 +29,14 @@ import Item, { Location } from "../interfaces/Item";
 interface ErrorMap {
   [key: string]: string;
 }
+interface MyResponse {
+  data: string;
+  status: number;
+}
 interface ResponseCust {
   modal: boolean;
   errors: ErrorMap;
-  response: AxiosResponse | void;
+  response: MyResponse | undefined;
 }
 export default function NewItem() {
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -42,9 +46,8 @@ export default function NewItem() {
   const form = React.useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
 
-  console.log("Rendering newItem.tsx");
-  console.log(response?.status);
-
+  //console.log("Rendering newItem.tsx");
+  //console.log(response?.status);
   React.useEffect(() => {
     if (response && response.status == 201) {
       setOpenSnack(true);
@@ -263,7 +266,7 @@ export default function NewItem() {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
-  const errors = validateForm(formData);
+  let errors = validateForm(formData);
   if (Object.keys(errors).length)
     return { modal: false, errors, response: undefined };
 
@@ -282,26 +285,34 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   let modal = true;
   const url = "http://localhost:8080/items";
-
-  let response = await axios
-    .post(url, item, {
+  let response: MyResponse | undefined = undefined;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    })
-    .catch(function (error) {
-      if (error.response) {
-        modal = false;
-        response = error.response;
-      } else if (error.request) {
-        modal = false;
-        throw json(
-          { message: "Error sending the request to add the Item" },
-          { status: 500 }
-        );
-      } else {
-      }
+      body: JSON.stringify(item),
     });
+    let data;
+    if (!res.ok) modal = false;
+    if (res.status === 409) {
+      data = await res.text();
+    } else {
+      data = await res.json();
+      errors = data;
+    }
+
+    response = { data: data, status: res.status };
+    console.log(response);
+  } catch (error) {
+    if (error) {
+      throw json(
+        { message: "Error sending the request to add the Item" },
+        { status: 500 }
+      );
+    }
+  }
 
   const responseCust: ResponseCust = {
     modal,

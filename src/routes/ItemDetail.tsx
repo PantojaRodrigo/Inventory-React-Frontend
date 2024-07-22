@@ -1,8 +1,13 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import axios from "axios";
-import { json, Params, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  json,
+  Link,
+  Params,
+  useLoaderData,
+  useNavigate,
+} from "react-router-dom";
 import Item from "../interfaces/Item";
 import {
   Button,
@@ -80,29 +85,31 @@ export default function ItemDetail() {
         </Box>
       </Card>
       <Box alignItems="flex-end">
-        <Button onClick={() => navigate("/items")} autoFocus>
-          Back to inventory
-        </Button>
+        <Link to="/items">
+          <Button autoFocus>Back to inventory</Button>
+        </Link>
       </Box>
     </Container>
   );
 }
 
-export const loader: LoaderFunction = ({ request, params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
   const id = params.itemId;
-  const data = axios
-    .get("http://localhost:8080/items/" + id)
-    .then((res) => res.data)
-    .catch(function (error) {
-      if (error.request) {
-        console.log("   Error al enviar request...");
-        throw json(
-          { message: "Could not find resource or page." },
-          { status: 500 }
-        );
-      }
-      return error.response;
-    });
-  return data;
-  //TODO ERROR HANDLING
+
+  try {
+    const response = await fetch(`http://localhost:8080/items/${id}`);
+
+    if (!response.ok) {
+      throw new Error("Could not find resource or page.");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error al enviar request...");
+    throw json(
+      { message: "Could not find resource or page." },
+      { status: 500 }
+    );
+  }
 };
