@@ -17,6 +17,8 @@ export default function ErrorPage() {
   if (error.status === 404) {
     title = "Not found!";
     message = "Could not find resource or page.";
+  } else {
+    message = error.message;
   }
 
   const containerSx = {

@@ -16,7 +16,9 @@ import {
   LoaderFunction,
   useActionData,
   useLoaderData,
+  useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import Fab from "@mui/material/Fab";
 import Typography from "@mui/material/Typography";
@@ -25,9 +27,19 @@ import Item from "../interfaces/Item";
 import React from "react";
 import ItemsTable from "../components/ItemsTable";
 import SearchField from "../components/SearchField";
+import { GET_ITEMS_WITH_SEARCH } from "../queries";
+import client from "../client";
+import { useQuery } from "@apollo/client";
 
 export default function Inventory() {
-  const items = useLoaderData() as Item[];
+  const searchStr = useLocation().search;
+  const searchValue = new URLSearchParams(searchStr).get("search");
+  const { loading, data, errors } = useQuery(GET_ITEMS_WITH_SEARCH, {
+    variables: { search: searchValue },
+    fetchPolicy: "cache-only",
+  });
+
+  const items = data.items;
   const res = useActionData() as Response;
   const [modalOpen, setModalOpen] = React.useState(0);
   const [snackOpen, setSnackOpen] = React.useState(false);
@@ -137,22 +149,18 @@ export default function Inventory() {
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  console.log("   Recibiendo inventario...");
   const search = new URL(request.url).searchParams.get("search");
-  let searchState = "";
-  if (search) searchState = "?state=" + search;
 
-  try {
-    const response = await fetch("http://localhost:8080/items" + searchState);
-    if (!response.ok) {
-      throw json({ message: "Error loading the inventory" }, { status: 500 });
-    }
-    return response;
-  } catch (error) {
-    console.log("   Error al enviar request...");
-    throw json({ message: "Error loading the inventory" }, { status: 500 });
-  }
+  const { data } = await client.query({
+    query: GET_ITEMS_WITH_SEARCH,
+    variables: {
+      search,
+    },
+  });
+  console.log("   Inventario recibido...");
+  return data;
 };
+
 export const action: ActionFunction = async ({ request, params }) => {
   //console.log("   Recibiendo form...");
 
