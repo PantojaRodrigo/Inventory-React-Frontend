@@ -1,20 +1,27 @@
-import { InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useCallback, useEffect, useRef, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "@mui/material";
 
-export default function SearchField({ searchFn }: { searchFn: Function }) {
+const SearchField = React.memo(({ searchFn }: { searchFn: Function }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const lastChange = useRef<NodeJS.Timeout>();
+  const lastChange = useRef<string>("");
   useEffect(() => {
-    const handler = setTimeout(() => {
-      searchFn(searchTerm);
-    }, 500);
+    if (
+      lastChange.current !== "Enter" &&
+      (searchTerm !== "" || lastChange.current === "Backspace")
+    ) {
+      const handler = setTimeout(() => {
+        searchFn(searchTerm);
+      }, 500);
+      console.log(lastChange.current);
 
-    // Cleanup timeout if searchTerm changes or component unmounts
-    return () => {
-      clearTimeout(handler);
-    };
+      // Cleanup timeout if searchTerm changes or component unmounts
+      return () => {
+        clearTimeout(handler);
+      };
+    }
   }, [searchTerm]);
 
   // Handle key down event to check for Enter key
@@ -22,11 +29,18 @@ export default function SearchField({ searchFn }: { searchFn: Function }) {
     if (event.key === "Enter") {
       searchFn(searchTerm);
     }
+    lastChange.current = event.key;
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+
+  const handleClear = () => {
+    setSearchTerm("");
+    searchFn("");
+  };
+
   return (
     <TextField
       id="search-input"
@@ -44,8 +58,22 @@ export default function SearchField({ searchFn }: { searchFn: Function }) {
             <SearchIcon />
           </InputAdornment>
         ),
+        endAdornment: (
+          <InputAdornment position="end">
+            {searchTerm && (
+              <IconButton
+                onClick={handleClear}
+                size="small"
+                sx={{ color: "action.active", mr: -1.5 }}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
       }}
       sx={{ marginY: "auto", pl: 0 }}
     />
   );
-}
+});
+export default SearchField;

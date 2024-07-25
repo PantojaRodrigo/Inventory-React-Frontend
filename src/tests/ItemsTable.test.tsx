@@ -81,12 +81,16 @@ const mockItems: Item[] = [
 ];
 
 describe("ItemsTable", () => {
-  const handleModalOpen = jest.fn();
+  const handleDeleteItem = jest.fn();
 
   beforeEach(() => {
     render(
       <Router>
-        <ItemsTable items={mockItems} handleModalOpen={handleModalOpen} />
+        <ItemsTable
+          items={mockItems}
+          handleDeleteItem={handleDeleteItem}
+          loading={false}
+        />
       </Router>
     );
   });
@@ -115,7 +119,7 @@ describe("ItemsTable", () => {
   test("opens modal on delete button click", () => {
     const deleteButton = screen.getAllByLabelText("delete")[0];
     fireEvent.click(deleteButton);
-    expect(handleModalOpen).toHaveBeenCalledWith(mockItems[0].itemId);
+    expect(handleDeleteItem).toHaveBeenCalledWith(mockItems[0].itemId);
   });
 
   test("changes page on pagination button click", () => {

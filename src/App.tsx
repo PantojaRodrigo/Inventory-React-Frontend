@@ -1,8 +1,8 @@
 import "./App.css";
-import Inventory, {
-  loader as itemsLoader,
-  action as itemDeleteAction,
-} from "./routes/Inventory";
+import Inventory /*, {
+  loader as itemsLoader  ,
+  action as itemDeleteAction, ,
+} */ from "./routes/Inventory";
 
 import {
   Outlet,
@@ -11,7 +11,7 @@ import {
   redirect,
 } from "react-router-dom";
 import NewItem, { action as itemAction } from "./routes/NewItem";
-import ItemDetail, { loader as itemLoader } from "./routes/ItemDetail";
+import ItemDetail /*, { loader as itemLoader } */ from "./routes/ItemDetail";
 import ErrorPage from "./routes/ErrorPage";
 
 const router = createBrowserRouter([
@@ -33,8 +33,8 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <Inventory />,
-            loader: itemsLoader,
-            action: itemDeleteAction,
+            //loader: itemsLoader,
+            //action: itemDeleteAction,
             errorElement: <ErrorPage />,
           },
           {
@@ -45,7 +45,8 @@ const router = createBrowserRouter([
           {
             path: ":itemId",
             element: <ItemDetail />,
-            loader: itemLoader,
+            errorElement: <ErrorPage />,
+            //loader: itemLoader,
           },
         ],
       },

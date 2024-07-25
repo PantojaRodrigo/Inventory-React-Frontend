@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import TableRowsLoader from "./TableRowsLoader";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -108,10 +109,12 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 export default function ItemsTable({
   items,
-  handleModalOpen,
+  handleDeleteItem,
+  loading,
 }: {
   items: Item[];
-  handleModalOpen: Function;
+  handleDeleteItem: Function;
+  loading: boolean;
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -153,44 +156,48 @@ export default function ItemsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {(rowsPerPage > 0
-              ? items.slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                )
-              : items
-            ).map((item) => (
-              <TableRow key={item.itemId}>
-                <TableCell
-                  onClick={() => navigate(`${item.itemId}`)}
-                  align="center"
-                >
-                  {item.itemId}
-                </TableCell>
-                <TableCell
-                  onClick={() => navigate(`${item.itemId}`)}
-                  align="left"
-                >
-                  {item.itemName}
-                </TableCell>
-                <TableCell
-                  onClick={() => navigate(`${item.itemId}`)}
-                  align="left"
-                >
-                  {item.description}
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    aria-label="delete"
-                    edge="start"
-                    sx={{ color: "black", "&:hover": { color: "red" } }}
-                    onClick={() => handleModalOpen(item.itemId)}
+            {loading ? (
+              <TableRowsLoader rowsNum={5}></TableRowsLoader>
+            ) : (
+              (rowsPerPage > 0
+                ? items.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : items
+              ).map((item) => (
+                <TableRow key={item.itemId}>
+                  <TableCell
+                    onClick={() => navigate(`${item.itemId}`)}
+                    align="center"
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                    {item.itemId}
+                  </TableCell>
+                  <TableCell
+                    onClick={() => navigate(`${item.itemId}`)}
+                    align="left"
+                  >
+                    {item.itemName}
+                  </TableCell>
+                  <TableCell
+                    onClick={() => navigate(`${item.itemId}`)}
+                    align="left"
+                  >
+                    {item.description}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      aria-label="delete"
+                      edge="start"
+                      sx={{ color: "black", "&:hover": { color: "red" } }}
+                      onClick={() => handleDeleteItem(item.itemId)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
             {emptyRows > 0 && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={6} />

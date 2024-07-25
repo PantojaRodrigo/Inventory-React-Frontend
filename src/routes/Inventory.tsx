@@ -24,35 +24,79 @@ import Fab from "@mui/material/Fab";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import Item from "../interfaces/Item";
-import React from "react";
+import React, { useCallback } from "react";
 import ItemsTable from "../components/ItemsTable";
 import SearchField from "../components/SearchField";
-import { GET_ITEMS_WITH_SEARCH } from "../queries";
+import { DELETE_ITEM, GET_ITEMS_WITH_SEARCH } from "../queries";
 import client from "../client";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import NoItems from "../components/NoItems";
+import { GraphQLFormattedError } from "graphql";
 
 export default function Inventory() {
+  console.log("Renderizando Inventory.tsx...");
   const searchStr = useLocation().search;
   const searchValue = new URLSearchParams(searchStr).get("search");
-  const { loading, data, errors } = useQuery(GET_ITEMS_WITH_SEARCH, {
-    variables: { search: searchValue },
-    fetchPolicy: "cache-only",
-  });
-
-  const items = data.items;
-  const res = useActionData() as Response;
   const [modalOpen, setModalOpen] = React.useState(0);
   const [snackOpen, setSnackOpen] = React.useState(false);
   const navigate = useNavigate();
 
-  let sts = 0;
-  if (res !== undefined) sts = res.status;
+  const {
+    loading: queryLoading,
+    data: queryData,
+    error: queryError,
+  } = useQuery(GET_ITEMS_WITH_SEARCH, {
+    variables: { search: searchValue },
+  });
+  console.log("errors: " + queryError?.message);
+
+  const [deleteItem, { error }] = useMutation(DELETE_ITEM, {
+    refetchQueries: [
+      { query: GET_ITEMS_WITH_SEARCH, variables: { search: searchValue } },
+    ],
+    onCompleted: (data) => {
+      setSnackOpen(true);
+    },
+    update: (cache, { data: { deleteItem } }) => {
+      const existingItems = cache.readQuery({
+        query: GET_ITEMS_WITH_SEARCH,
+        variables: { search: searchValue },
+      }) as { items: Item[] };
+      console.log("updatE!!!!");
+
+      const newItems = existingItems.items.filter(
+        (item) => item.itemId !== modalOpen
+      );
+      cache.writeQuery({
+        query: GET_ITEMS_WITH_SEARCH,
+        data: { items: newItems },
+        variables: { search: searchValue },
+      });
+    },
+    optimisticResponse: {
+      deleteItem: {
+        __typename: "Item",
+        itemId: null,
+        itemName: null,
+      },
+    },
+  });
+  let items = [];
+  if (!queryLoading) {
+    items = queryData.items;
+  }
+
+  //const errors = useActionData() as GraphQLFormattedError[];
 
   function handleModalClose() {
     setModalOpen(0);
   }
   function handleModalOpen(itemId: number) {
     setModalOpen(itemId);
+  }
+  function handleDeleteITem() {
+    deleteItem({ variables: { id: modalOpen } });
+    setModalOpen(0);
   }
   const handleSnackClose = (
     event?: React.SyntheticEvent | Event,
@@ -63,18 +107,19 @@ export default function Inventory() {
     }
     setSnackOpen(false);
   };
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     if (modalOpen !== 0) {
       console.log("   Cerrando Modal...");
       handleModalClose();
       setSnackOpen(true);
     }
-  }, [items]);
+  }, [items]); */
 
-  //console.log("Renderizando inventory...");
-  const search = (str: string) => {
+  const search = useCallback((str: string) => {
     navigate("/items?search=" + str);
-  };
+    console.log("Searching...");
+  }, []);
+
   return (
     <>
       <Container maxWidth="md">
@@ -102,10 +147,15 @@ export default function Inventory() {
             </Link>
           </Grid>
         </Grid>
-        <ItemsTable
-          items={items}
-          handleModalOpen={handleModalOpen}
-        ></ItemsTable>
+        {items.length == 0 && !queryLoading ? (
+          <NoItems empty={searchValue == null || searchValue == ""}></NoItems>
+        ) : (
+          <ItemsTable
+            items={items}
+            handleDeleteItem={handleModalOpen}
+            loading={queryLoading}
+          ></ItemsTable>
+        )}
       </Container>
       <Snackbar
         open={snackOpen}
@@ -115,11 +165,11 @@ export default function Inventory() {
       >
         <Alert
           onClose={handleSnackClose}
-          severity={sts > 299 ? "error" : "success"}
+          severity={error !== undefined ? "error" : "success"}
           //variant="outlined"
           sx={{ width: "100%" }}
         >
-          {sts > 299 ? "Operation failed" : "Item deleted!"}
+          {error !== undefined ? `${error.message}` : "Item deleted!"}
         </Alert>
       </Snackbar>
       <Dialog
@@ -136,19 +186,22 @@ export default function Inventory() {
             No
           </Button>
 
-          <Form method="delete" replace>
+          {/* <Form method="delete" replace>
             <input name="itemId" defaultValue={modalOpen} hidden />
             <Button autoFocus variant="contained" type="submit">
               Yes
             </Button>
-          </Form>
+          </Form> */}
+          <Button autoFocus variant="contained" onClick={handleDeleteITem}>
+            Yes
+          </Button>
         </DialogActions>
       </Dialog>
     </>
   );
 }
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+/* export const loader: LoaderFunction = async ({ request, params }) => {
   const search = new URL(request.url).searchParams.get("search");
 
   const { data } = await client.query({
@@ -159,23 +212,22 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   });
   console.log("   Inventario recibido...");
   return data;
-};
+}; */
 
-export const action: ActionFunction = async ({ request, params }) => {
-  //console.log("   Recibiendo form...");
+/* export const action: ActionFunction = async ({ request, params }) => {
+  console.log("   Recibiendo form...");
 
   const formData = await request.formData();
-  const itemId = formData.get("itemId");
-  //console.log("   Enviando delete...");
-  const url = "http://localhost:8080/items/" + itemId;
-
-  try {
-    const response = await fetch(url, {
-      method: "DELETE",
-    });
-
-    return response;
-  } catch (error) {
-    throw json({ message: "Error al mandar la solicitud" }, { status: 500 });
-  }
-};
+  const itemId = formData.get("itemId") as string;
+  const id = parseInt(itemId);
+  console.log("   Enviando delete...");
+  const { data, errors } = await client.mutate({
+    mutation: DELETE_ITEM,
+    variables: {
+      id: id,
+    },
+  });
+  console.log(data);
+  if (errors === undefined) return null;
+  return errors;
+}; */
