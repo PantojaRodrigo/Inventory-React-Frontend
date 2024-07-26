@@ -2,7 +2,7 @@ import "./App.css";
 import Inventory /*, {
   loader as itemsLoader  ,
   action as itemDeleteAction, ,
-} */ from "./routes/Inventory";
+} */ from "./pages/Inventory";
 
 import {
   Outlet,
@@ -10,9 +10,10 @@ import {
   createBrowserRouter,
   redirect,
 } from "react-router-dom";
-import NewItem, { action as itemAction } from "./routes/NewItem";
-import ItemDetail /*, { loader as itemLoader } */ from "./routes/ItemDetail";
-import ErrorPage from "./routes/ErrorPage";
+import NewItem /* , { action as itemAction } */ from "./pages/NewItem";
+import ItemDetail /*, { loader as itemLoader } */ from "./pages/ItemDetail";
+import ErrorPage from "./pages/ErrorPage";
+import UpdateItem from "./pages/UpdateItem";
 
 const router = createBrowserRouter([
   {
@@ -40,12 +41,24 @@ const router = createBrowserRouter([
           {
             path: "newItem",
             element: <NewItem />,
-            action: itemAction,
+            /* action: itemAction, */
           },
           {
             path: ":itemId",
-            element: <ItemDetail />,
+            element: <Outlet />,
             errorElement: <ErrorPage />,
+            children: [
+              {
+                index: true,
+                element: <ItemDetail />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "newItem",
+                element: <UpdateItem />,
+                errorElement: <ErrorPage />,
+              },
+            ],
             //loader: itemLoader,
           },
         ],

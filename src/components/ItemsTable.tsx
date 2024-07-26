@@ -29,6 +29,7 @@ import {
   TableHead,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import TableRowsLoader from "./TableRowsLoader";
 
@@ -184,6 +185,17 @@ export default function ItemsTable({
                     align="left"
                   >
                     {item.description}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Link to={`/items/${item.itemId}/newItem`}>
+                      <IconButton
+                        aria-label="update"
+                        edge="start"
+                        sx={{ color: "black", "&:hover": { color: "blue" } }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Link>
                   </TableCell>
                   <TableCell align="right">
                     <IconButton

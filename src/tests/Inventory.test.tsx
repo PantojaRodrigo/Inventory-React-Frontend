@@ -1,7 +1,7 @@
 import React, { act } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import Inventory from "../routes/Inventory";
+import Inventory from "../pages/Inventory";
 import {
   createMemoryRouter,
   json,
