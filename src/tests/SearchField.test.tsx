@@ -9,7 +9,7 @@ describe("SearchField Component", () => {
 
     render(<SearchField searchFn={searchFnMock} />);
 
-    const input = screen.getByLabelText("Search") as HTMLInputElement;
+    const input = screen.getByLabelText("Search items") as HTMLInputElement;
 
     expect(input).toBeInTheDocument();
 
@@ -26,7 +26,7 @@ describe("SearchField Component", () => {
 
     render(<SearchField searchFn={searchFnMock} />);
 
-    const input = screen.getByLabelText("Search") as HTMLInputElement;
+    const input = screen.getByLabelText("Search items") as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: "immediate" } });
     fireEvent.keyDown(input, { key: "Enter", code: "Enter" });

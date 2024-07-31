@@ -138,7 +138,11 @@ export default function ItemsTable({
     setPage(0);
   };
   //console.log("Renderizando tabla...");
-
+  React.useEffect(() => {
+    if (page !== 0 && page === items.length / rowsPerPage) {
+      setPage((prevPage) => prevPage - 1);
+    }
+  }, [items]);
   return (
     <>
       <TableContainer component={Paper}>
@@ -196,11 +200,10 @@ export default function ItemsTable({
                         <EditIcon />
                       </IconButton>
                     </Link>
-                  </TableCell>
-                  <TableCell align="right">
+
                     <IconButton
                       aria-label="delete"
-                      edge="start"
+                      edge="end"
                       sx={{ color: "black", "&:hover": { color: "red" } }}
                       onClick={() => handleDeleteItem(item.itemId)}
                     >
