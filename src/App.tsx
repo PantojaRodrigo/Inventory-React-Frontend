@@ -41,6 +41,7 @@ const router = createBrowserRouter([
           {
             path: "newItem",
             element: <NewItem />,
+            errorElement: <ErrorPage />,
             /* action: itemAction, */
           },
           {
