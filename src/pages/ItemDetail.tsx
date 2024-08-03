@@ -24,6 +24,7 @@ export default function ItemDetail() {
     variables: { id },
   });
 
+  console.log({ loading, data, error: { ...error } });
   if (loading) {
     return (
       <>
@@ -40,8 +41,12 @@ export default function ItemDetail() {
       </>
     );
   }
-  if (error?.networkError) {
-    return <ApolloErrorPage error={error}></ApolloErrorPage>;
+
+  if (error?.cause?.extensions && typeof error.cause.extensions === "object") {
+    const extensions = error.cause.extensions as { [key: string]: any };
+    if (extensions.code === "NETWORK_ERROR") {
+      return <ApolloErrorPage error={error} />;
+    }
   }
   if (data && data.item) {
     const item = data.item;

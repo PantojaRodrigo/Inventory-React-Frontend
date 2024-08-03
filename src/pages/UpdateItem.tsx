@@ -36,8 +36,11 @@ export default function UpdateItem() {
       </>
     );
   }
-  if (error?.networkError) {
-    return <ApolloErrorPage error={error}></ApolloErrorPage>;
+  if (error?.cause?.extensions && typeof error.cause.extensions === "object") {
+    const extensions = error.cause.extensions as { [key: string]: any };
+    if (extensions.code === "NETWORK_ERROR") {
+      return <ApolloErrorPage error={error} />;
+    }
   }
   let item = null;
   if (data && data.item) {

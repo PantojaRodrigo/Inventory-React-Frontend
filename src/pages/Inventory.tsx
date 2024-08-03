@@ -33,10 +33,15 @@ export default function Inventory() {
   } = useQuery(GET_ITEMS_WITH_SEARCH, {
     variables: { search: searchValue },
   });
-  if (queryError && queryError.networkError) {
-    return <ApolloErrorPage error={queryError}></ApolloErrorPage>;
+  if (
+    queryError?.cause?.extensions &&
+    typeof queryError.cause.extensions === "object"
+  ) {
+    const extensions = queryError.cause.extensions as { [key: string]: any };
+    if (extensions.code === "NETWORK_ERROR") {
+      return <ApolloErrorPage error={queryError} />;
+    }
   }
-
   const items: Item[] = queryLoading || !queryData ? [] : queryData.items;
 
   return (

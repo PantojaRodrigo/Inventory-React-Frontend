@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function ApolloErrorPage({ error }: { error: ApolloError }) {
   let title = "An error ocurred";
   let message = "Something went wrong!";
-  let lel = <></>;
+  let networkMessage = <></>;
   if (error.networkError) {
     title = "There was a problem connecting to the server";
     message = error.networkError.message;
@@ -13,9 +13,9 @@ export default function ApolloErrorPage({ error }: { error: ApolloError }) {
   if (error.graphQLErrors && error.graphQLErrors.length > 0) {
     message = "";
     if (error.graphQLErrors[0].message === "[object Object]") {
-      lel = <p>Resource or page not found</p>;
+      networkMessage = <p>Resource or page not found</p>;
     } else {
-      lel = (
+      networkMessage = (
         <div>
           {error.graphQLErrors.map((err, index) => (
             <p key={index}>{err.message}</p>
@@ -41,7 +41,7 @@ export default function ApolloErrorPage({ error }: { error: ApolloError }) {
         <Typography variant="h4">{title}</Typography>
         <Typography variant="h5" color="text.secondary">
           {message}
-          {lel}
+          {networkMessage}
         </Typography>
         <Link to="/items">
           <Button variant="contained" color="primary">
