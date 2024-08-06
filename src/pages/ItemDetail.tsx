@@ -52,9 +52,10 @@ export default function ItemDetail() {
     const item = data.item;
     return (
       <Container
-        sx={{ width: "100%", maxWidth: 500, mt: 5, justifyContent: "center" }}
+        maxWidth="sm"
+        sx={{ width: "100%", mt: 5, justifyContent: "center" }}
       >
-        <Card variant="outlined" sx={{ maxWidth: 360 }}>
+        <Card variant="outlined" sx={{ maxWidth: 360, mx: "auto" }}>
           <Box sx={{ p: 2 }}>
             <Stack
               direction="row"
@@ -111,9 +112,15 @@ export default function ItemDetail() {
             </Stack>
           </Box>
         </Card>
-        <Box alignItems="flex-end">
-          <Link to="/items">
-            <Button autoFocus>Back to inventory</Button>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+          mt={2}
+        >
+          <Link to="/items" style={{ textDecoration: "none" }}>
+            <Button sx={{ color: "rgb(0,38,58)" }}>Back to inventory</Button>
           </Link>
         </Box>
       </Container>

@@ -14,11 +14,12 @@ import NewItem /* , { action as itemAction } */ from "./pages/NewItem";
 import ItemDetail /*, { loader as itemLoader } */ from "./pages/ItemDetail";
 import ErrorPage from "./pages/ErrorPage";
 import UpdateItem from "./pages/UpdateItem";
+import Navbar from "./pages/Navbar";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Outlet />,
+    element: <Navbar />,
     errorElement: <ErrorPage />,
     loader: ({ request }) => {
       const url = new URL(request.url).pathname;

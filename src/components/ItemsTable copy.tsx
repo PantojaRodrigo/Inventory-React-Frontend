@@ -14,14 +14,26 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useRevalidator,
+} from "react-router-dom";
 import Item from "../interfaces/Item.jsx";
-import { TableHead, TableSortLabel } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  TableHead,
+  TableSortLabel,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import axios from "axios";
 import TableRowsLoader from "./TableRowsLoader";
 import { visuallyHidden } from "@mui/utils";
-import { AnimatePresence, motion } from "framer-motion";
 interface TablePaginationActionsProps {
   count: number;
   page: number;
@@ -111,7 +123,6 @@ export default function ItemsTable({
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Item>("itemId");
   const navigate = useNavigate();
-  console.log(">>Renderizando Tabla.tsx");
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - items.length) : 0;
@@ -149,7 +160,6 @@ export default function ItemsTable({
       setPage((prevPage) => prevPage - 1);
     }
   }, [items]);
-
   return (
     <>
       <TableContainer component={Paper}>
@@ -259,10 +269,7 @@ export default function ItemsTable({
                       <IconButton
                         aria-label="update"
                         edge="start"
-                        sx={{
-                          color: "black",
-                          "&:hover": { color: "blue" },
-                        }}
+                        sx={{ color: "black", "&:hover": { color: "blue" } }}
                       >
                         <EditIcon />
                       </IconButton>
@@ -280,7 +287,6 @@ export default function ItemsTable({
                 </TableRow>
               ))
             )}
-
             {emptyRows > 0 && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={6} />

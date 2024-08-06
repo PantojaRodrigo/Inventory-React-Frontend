@@ -27,7 +27,7 @@ export default function NoItems({
       <Box mt={2}>
         {error && (
           <Typography variant="h5" component="div" gutterBottom>
-            {error.message}
+            There was an error conecting with the server.
           </Typography>
         )}
         {!error && (
