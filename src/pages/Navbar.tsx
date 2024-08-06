@@ -110,13 +110,13 @@ const Navbar = () => {
                 width: "100%",
               }}
             >
-              <Link to="/items">
+              <Link to="/items" style={{ textDecoration: "none" }}>
                 <Button
                   sx={{
                     my: 2,
                     color: "rgb(0,38,58)",
                     display: "flex",
-                    fontFamily: "arial",
+                    fontFamily: "Arial, sans-serif",
                     fontWeight: 700,
                   }}
                 >

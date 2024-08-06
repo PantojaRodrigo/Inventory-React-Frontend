@@ -48,7 +48,9 @@ export default function ItemDetail() {
       return <ApolloErrorPage error={error} />;
     }
   }
-  if (data && data.item) {
+  if (!data || data.item === null) {
+    return <NoItemFound></NoItemFound>;
+  } else {
     const item = data.item;
     return (
       <Container
@@ -125,7 +127,5 @@ export default function ItemDetail() {
         </Box>
       </Container>
     );
-  } else {
-    return <NoItemFound></NoItemFound>;
   }
 }

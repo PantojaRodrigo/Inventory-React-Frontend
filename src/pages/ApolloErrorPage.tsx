@@ -13,7 +13,7 @@ export default function ApolloErrorPage({ error }: { error: ApolloError }) {
   if (error.graphQLErrors && error.graphQLErrors.length > 0) {
     message = "";
     if (error.graphQLErrors[0].message === "[object Object]") {
-      networkMessage = <p>Resource or page not found</p>;
+      networkMessage = <p>There was an error connecting with the server</p>;
     } else {
       networkMessage = (
         <div>

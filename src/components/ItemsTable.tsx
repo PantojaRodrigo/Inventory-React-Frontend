@@ -259,10 +259,7 @@ export default function ItemsTable({
                       <IconButton
                         aria-label="update"
                         edge="start"
-                        sx={{
-                          color: "black",
-                          "&:hover": { color: "blue" },
-                        }}
+                        className="rotate-on-hover"
                       >
                         <EditIcon />
                       </IconButton>
@@ -271,8 +268,8 @@ export default function ItemsTable({
                     <IconButton
                       aria-label="delete"
                       edge="end"
-                      sx={{ color: "black", "&:hover": { color: "red" } }}
                       onClick={() => handleDeleteItem(item.itemId)}
+                      className="shake-on-hover"
                     >
                       <DeleteIcon />
                     </IconButton>

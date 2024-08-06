@@ -10,7 +10,10 @@ export default function NoItemFound() {
           {"Item not found"}
         </Typography>
         <Link to="/items">
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "rgb(0,196,179)" }}
+          >
             Go to Inventory
           </Button>
         </Link>

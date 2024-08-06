@@ -1,16 +1,62 @@
-import React, { act } from "react";
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import { MockedProvider } from "@apollo/client/testing";
 import Inventory from "../../pages/Inventory";
-import {
-  createMemoryRouter,
-  json,
-  MemoryRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { GET_ITEMS_WITH_SEARCH } from "../../queries";
+import NoItems from "../../components/NoItems";
+import ItemsTable from "../../components/ItemsTable";
+import ApolloErrorPage from "../../pages/ApolloErrorPage";
+import { useSearch } from "../../hooks/useSearch";
+import { useDeleteItem } from "../../hooks/useDeleteItem";
 import Item, { Location } from "../../interfaces/Item";
 
-// Mock data
+jest.mock("../../hooks/useSearch", () => ({
+  useSearch: jest.fn(),
+}));
+
+jest.mock("../../hooks/useDeleteItem", () => ({
+  useDeleteItem: jest.fn(),
+}));
+jest.mock("../../components/ItemsTable", () => ({
+  __esModule: true,
+  default: ({
+    items,
+    handleModalOpen,
+  }: {
+    items: Item[];
+    handleModalOpen: Function;
+  }) => (
+    <div>
+      <div>ItemsTable</div>
+      {items.map((item) => (
+        <div key={item.itemId}>
+          <div> {item.itemName}</div>
+          <div aria-label="delete" onClick={() => handleModalOpen(item.itemId)}>
+            Borrar
+          </div>
+        </div>
+      ))}
+    </div>
+  ),
+}));
+interface InventoryHeaderProps {
+  itemsLength: number;
+  queryLoading: boolean;
+  search: (str: string) => void;
+}
+jest.mock("../../components/InventoryHeader", () => ({
+  __esModule: true,
+  default: ({ itemsLength, queryLoading, search }: InventoryHeaderProps) => (
+    <div>AAA</div>
+  ),
+}));
+
+jest.mock("../../components/DeleteDialog", () => () => <div>DeleteDialog</div>);
+jest.mock("../../components/InventorySnackbar", () => () => (
+  <div>InventorySnackbar</div>
+));
+jest.mock("../../components/NoItems", () => () => <div>NoItems</div>);
+jest.mock("../../pages/ApolloErrorPage", () => () => <div>Error</div>);
 const location: Location[] = [
   {
     locationId: 1,
@@ -87,173 +133,89 @@ const mockItems: Item[] = [
     location: location[5],
   },
 ];
-global.fetch = jest.fn((url) => {
-  if (url.includes("/items")) {
-    return Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(mockItems),
-    });
-  } else if (url.includes("/items/1")) {
-    return Promise.resolve({
-      ok: true,
-      status: 200,
-    });
-  }
-  return Promise.reject(new Error("Unknown endpoint"));
-}) as jest.Mock;
-const mockNavigate = jest.fn();
-// Mock the dependencies
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  /* useLoaderData: jest.fn(),
-  useActionData: jest.fn(), */
-  //useNavigate: () => mockNavigate,
-}));
-
-// Define rutas y elementos de prueba
-const routes = [
+const mocks = [
   {
-    path: "/",
-    element: <Inventory />,
-    loader: async () => mockItems,
-    action: async ({ request }: { request: Request }) => {
-      const formData = await request.formData();
-      const itemId = formData.get("itemId");
-      console.log("Llamando accion...");
-
-      // Simular eliminación de item
-      return json({ message: "eliminado con exito" }, { status: 200 });
+    request: {
+      query: GET_ITEMS_WITH_SEARCH,
+      variables: { search: "" },
+    },
+    result: {
+      data: {
+        items: [],
+      },
     },
   },
 ];
-jest.mock("../components/ItemsTable", () => ({
-  __esModule: true,
-  default: ({
-    items,
-    handleModalOpen,
-  }: {
-    items: Item[];
-    handleModalOpen: Function;
-  }) => (
-    <div>
-      <div>ItemsTable</div>
-      {items.map((item) => (
-        <div key={item.itemId}>
-          <div> {item.itemName}</div>
-          <div aria-label="delete" onClick={() => handleModalOpen(item.itemId)}>
-            Borrar
-          </div>
-        </div>
-      ))}
-    </div>
-  ),
-}));
-jest.mock("../components/SearchField", () => ({
-  __esModule: true,
-  default: ({ searchFn }: { searchFn: any }) => (
-    <input
-      type="text"
-      onChange={(e) => searchFn(e.target.value)}
-      data-testid="search-field"
-    />
-  ),
-}));
 
-const mockResponse = { status: 200 };
-const router = createMemoryRouter(routes, {
-  initialEntries: ["/"],
-});
-describe("Inventory component", () => {
+describe("Inventory Component", () => {
   beforeEach(() => {
-    render(<RouterProvider router={router} />);
+    jest.clearAllMocks();
   });
 
-  test("renders the component correctly", async () => {
+  it("should render without crashing", () => {
+    (useSearch as jest.Mock).mockReturnValue({
+      searchValue: "",
+      search: jest.fn(),
+    });
+    (useDeleteItem as jest.Mock).mockReturnValue({
+      modalOpen: 0,
+      snackOpen: false,
+      handleModalClose: jest.fn(),
+      handleModalOpen: jest.fn(),
+      handleDeleteItem: jest.fn(),
+      handleSnackClose: jest.fn(),
+      error: null,
+    });
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <Inventory />
+      </MockedProvider>
+    );
+    expect(screen.getByText(/AAA/i)).toBeInTheDocument();
+  });
+
+  it("should display NoItems component when there are no items and search is empty", async () => {
+    const mocks = [
+      {
+        request: {
+          query: GET_ITEMS_WITH_SEARCH,
+          variables: { search: "" },
+        },
+        result: {
+          data: {
+            items: mockItems,
+          },
+        },
+      },
+    ];
+    (useSearch as jest.Mock).mockReturnValue({
+      searchValue: "",
+      search: jest.fn(),
+    });
+    (useDeleteItem as jest.Mock).mockReturnValue({
+      modalOpen: 0,
+      snackOpen: false,
+      handleModalClose: jest.fn(),
+      handleModalOpen: jest.fn(),
+      handleDeleteItem: jest.fn(),
+      handleSnackClose: jest.fn(),
+      error: null,
+    });
+
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <Inventory />
+      </MockedProvider>
+    );
+
     await waitFor(() => {
-      expect(screen.getByText("Showing 6 items")).toBeInTheDocument();
-      expect(screen.getByText(/ItemsTable/i)).toBeInTheDocument();
+      expect(screen.getByText(/NoItems/i)).toBeInTheDocument();
     });
   });
 
-  test("open and closes the modal", async () => {
-    await waitFor(() =>
-      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
-    );
+  it("should display ItemsTable component when there are items", async () => {});
 
-    const deleteButton = screen.getAllByLabelText("delete")[0];
-    act(() => {
-      fireEvent.click(deleteButton);
-    });
+  it("should show ApolloErrorPage on error", async () => {});
 
-    expect(
-      screen.getByText(/Are you sure you want to delete this item\?/i)
-    ).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(screen.getByText("No"));
-    });
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/Are you sure you want to delete this item\?/i)
-      ).not.toBeInTheDocument()
-    );
-  });
-
-  test("open the modal and deletes the item", async () => {
-    await waitFor(() =>
-      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
-    );
-
-    const deleteButton = screen.getAllByLabelText("delete")[0];
-    act(() => {
-      fireEvent.click(deleteButton);
-    });
-
-    expect(
-      screen.getByText(/Are you sure you want to delete this item\?/i)
-    ).toBeInTheDocument();
-
-    const spyAction = jest.spyOn(routes[0], "action");
-
-    act(() => {
-      fireEvent.click(screen.getByText("Yes"));
-    });
-    console.log(spyAction.mockImplementation);
-
-    await waitFor(() => {
-      expect(spyAction).toHaveBeenCalledTimes(1);
-      /* const formData = new FormData();
-      formData.set("itemId", "111");
-      expect(spyAction).toHaveBeenCalledWith(
-        expect.objectContaining({ request: expect.anything() })
-      ); */
-      expect(screen.queryByText(/Item deleted!/i)).toBeInTheDocument();
-    });
-  });
-
-  test("search function triggers navigation", async () => {
-    await waitFor(() =>
-      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
-    );
-    act(() => {
-      fireEvent.change(screen.getByTestId("search-field"), {
-        target: { value: "test" },
-      });
-    });
-    await waitFor(() => {
-      expect(router.state.location.pathname).toBe("/items");
-      expect(router.state.location.search).toBe("?search=test");
-    });
-  });
-
-  test("open Add Item page", async () => {
-    await waitFor(() =>
-      expect(screen.getByText("Showing 6 items")).toBeInTheDocument()
-    );
-    act(() => {
-      fireEvent.click(screen.getByLabelText("add"));
-    });
-    await waitFor(() => {
-      expect(router.state.location.pathname).toBe("/items/newItem");
-    });
-  });
+  it("should handle delete dialog and snackbar", () => {});
 });

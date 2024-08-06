@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Container, Typography } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Form, useNavigate, useParams } from "react-router-dom";
+import { Form, Link, useNavigate, useParams } from "react-router-dom";
 import Item from "../interfaces/Item";
 import LoadingButton from "@mui/lab/LoadingButton";
 
@@ -49,19 +49,18 @@ export default function ItemForm({
         error={addError ? addError! : updateError!}
       ></ApolloErrorPage>
     );
+  } else if (addError || updateError) {
+    <ApolloErrorPage
+      error={addError ? addError! : updateError!}
+    ></ApolloErrorPage>;
   }
   return (
     <>
-      <Box>
-        <Button onClick={() => navigate("/items")} autoFocus>
-          Back to inventory
-        </Button>
-      </Box>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 2,
+            marginTop: 3,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -95,6 +94,11 @@ export default function ItemForm({
               {method === "PATCH" ? "Update" : "Add"} item
             </LoadingButton>
           </Form>
+        </Box>
+        <Box sx={{ alignItems: "center" }}>
+          <Link to="/items" style={{ textDecoration: "none" }}>
+            <Button>Back to Inventory</Button>
+          </Link>
         </Box>
       </Container>
       <ItemFormDialog

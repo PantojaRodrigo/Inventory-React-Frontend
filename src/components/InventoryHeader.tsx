@@ -36,7 +36,12 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
     </Grid>
     <Grid item>
       <Link to="newItem">
-        <Fab color="primary" aria-label="add" size="medium">
+        <Fab
+          color="primary"
+          aria-label="add"
+          size="medium"
+          sx={{ backgroundColor: "rgb(0,196,179)" }}
+        >
           <AddIcon />
         </Fab>
       </Link>

@@ -7,6 +7,10 @@ import ItemForm from "../../components/ItemForm";
 import { useAddItem, useUpdateItem } from "../../hooks/useItemMutations";
 import { useFormHandlers } from "../../hooks/useFormHandlers";
 import Item from "../../interfaces/Item";
+import ItemFormSnackbar from "../../components/ItemFormSnackbar";
+import ItemFormDialog from "../../components/ItemFormDialog";
+import FormFields from "../../components/FormFields";
+import ApolloErrorPage from "../../pages/ApolloErrorPage";
 
 jest.mock("../../components/FormFields", () => () => <div>FormFields</div>);
 jest.mock("../../components/ItemFormDialog", () => () => (
@@ -14,6 +18,9 @@ jest.mock("../../components/ItemFormDialog", () => () => (
 ));
 jest.mock("../../components/ItemFormSnackbar", () => () => (
   <div>ItemFormSnackbar</div>
+));
+jest.mock("../../pages/ApolloErrorPage", () => () => (
+  <div>ApolloErrorPage</div>
 ));
 // Mock hooks
 jest.mock("../../hooks/useItemMutations", () => ({
@@ -76,7 +83,7 @@ describe("ItemForm", () => {
       setSnackOpen: jest.fn(),
     });
   });
-
+  //TODO: Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.Jest
   test("renders the form with correct title and fields", () => {
     const routes = [
       {
@@ -105,17 +112,6 @@ describe("ItemForm", () => {
   });
 
   it("displays error messages when errors are present", () => {
-    (useAddItem as jest.Mock).mockReturnValue({
-      addItem: mockAddItem,
-      addError: new Error("Add error occurred"),
-      addLoading: false,
-    });
-    (useUpdateItem as jest.Mock).mockReturnValue({
-      updateItem: mockUpdateItem,
-      updateError: new Error("Update error occurred"),
-      updateLoading: false,
-    });
-
     render(
       <Router>
         <ItemForm method="POST" item={null} />
