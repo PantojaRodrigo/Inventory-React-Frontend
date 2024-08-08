@@ -7,12 +7,14 @@ import { ApolloError } from "@apollo/client";
 describe("NoItems", () => {
   it("renders error message when there is an ApolloError", () => {
     const mockError = new ApolloError({
-      errorMessage: "Something went wrong",
+      errorMessage: "There was an error conecting with the server.",
     });
 
     render(<NoItems empty={true} error={mockError} />);
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.getByText("There was an error conecting with the server.")
+    ).toBeInTheDocument();
     expect(screen.queryByText("No items found")).toBeNull();
     expect(
       screen.queryByText(

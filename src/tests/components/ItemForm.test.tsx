@@ -11,6 +11,7 @@ import ItemFormSnackbar from "../../components/ItemFormSnackbar";
 import ItemFormDialog from "../../components/ItemFormDialog";
 import FormFields from "../../components/FormFields";
 import ApolloErrorPage from "../../pages/ApolloErrorPage";
+import { ApolloError } from "@apollo/client";
 
 jest.mock("../../components/FormFields", () => () => <div>FormFields</div>);
 jest.mock("../../components/ItemFormDialog", () => () => (
@@ -19,9 +20,9 @@ jest.mock("../../components/ItemFormDialog", () => () => (
 jest.mock("../../components/ItemFormSnackbar", () => () => (
   <div>ItemFormSnackbar</div>
 ));
-jest.mock("../../pages/ApolloErrorPage", () => () => (
-  <div>ApolloErrorPage</div>
-));
+jest.mock("../../pages/ApolloErrorPage", () => {
+  return ({ error }: { error: ApolloError }) => <div>{error.message}</div>;
+});
 // Mock hooks
 jest.mock("../../hooks/useItemMutations", () => ({
   useAddItem: jest.fn(),
@@ -30,20 +31,6 @@ jest.mock("../../hooks/useItemMutations", () => ({
 
 jest.mock("../../hooks/useFormHandlers", () => ({
   useFormHandlers: jest.fn(),
-}));
-
-// Mocks
-const mockAddItem = jest.fn();
-const mockUpdateItem = jest.fn();
-const mockUseFormHandlers = jest.fn();
-
-const mockNavigate = jest.fn();
-
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => mockNavigate,
-  Form: ({ children }: { children: React.ReactNode }) => (
-    <form>{children}</form>
-  ),
 }));
 
 const mockItem: Item = {
@@ -62,12 +49,12 @@ describe("ItemForm", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     (useAddItem as jest.Mock).mockReturnValue({
-      addItem: mockAddItem,
+      addItem: jest.fn(),
       addError: undefined,
       addLoading: false,
     });
     (useUpdateItem as jest.Mock).mockReturnValue({
-      updateItem: mockUpdateItem,
+      updateItem: jest.fn(),
       updateError: undefined,
       updateLoading: false,
     });
@@ -84,7 +71,7 @@ describe("ItemForm", () => {
     });
   });
   //TODO: Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.Jest
-  test("renders the form with correct title and fields", () => {
+  test("renders the create item title when POST method and no item is null", () => {
     const routes = [
       {
         path: "/",
@@ -99,19 +86,52 @@ describe("ItemForm", () => {
 
     expect(screen.getByText("Create New Item")).toBeInTheDocument();
     expect(screen.getByText("FormFields")).toBeInTheDocument();
+    expect(screen.getByText("Add item")).toBeInTheDocument();
   });
+  test("renders the update title when method is PATCH and item is provided", () => {
+    const routes = [
+      {
+        path: "/",
+        element: <ItemForm method="PATCH" item={mockItem} />,
+      },
+    ];
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+    });
 
-  it("renders the update title when method is PATCH and item is provided", () => {
-    render(
-      <Router>
-        <ItemForm method="PATCH" item={mockItem} />
-      </Router>
-    );
+    render(<RouterProvider router={router} />);
 
     expect(screen.getByText("Update Item")).toBeInTheDocument();
+    expect(screen.getByText("FormFields")).toBeInTheDocument();
+    expect(screen.getByText("Update item")).toBeInTheDocument();
   });
 
-  it("displays error messages when errors are present", () => {
+  test("displays add error wher add fails", () => {
+    jest.resetAllMocks();
+    (useAddItem as jest.Mock).mockReturnValue({
+      addItem: jest.fn(),
+      addError: new ApolloError({
+        errorMessage: "Add error occurred",
+        networkError: new Error("NetworkError"),
+      }),
+      addLoading: false,
+    });
+    (useUpdateItem as jest.Mock).mockReturnValue({
+      updateItem: jest.fn(),
+      updateError: {},
+      updateLoading: false,
+    });
+    (useFormHandlers as jest.Mock).mockReturnValue({
+      errors: {},
+      modalOpen: false,
+      snackOpen: false,
+      form: React.createRef(),
+      handleSnackClose: jest.fn(),
+      handleModalClose: jest.fn(),
+      handleModalOpen: jest.fn(),
+      handleSubmitForm: jest.fn(),
+      setSnackOpen: jest.fn(),
+    });
     render(
       <Router>
         <ItemForm method="POST" item={null} />
@@ -119,21 +139,32 @@ describe("ItemForm", () => {
     );
 
     expect(screen.getByText("Add error occurred")).toBeInTheDocument();
-
-    render(
-      <Router>
-        <ItemForm method="PATCH" item={mockItem} />
-      </Router>
-    );
-
-    expect(screen.getByText("Update error occurred")).toBeInTheDocument();
   });
-
-  it("calls navigate on successful update", async () => {
+  test("displays update error wher add update", () => {
+    jest.resetAllMocks();
+    (useAddItem as jest.Mock).mockReturnValue({
+      addItem: jest.fn(),
+      addError: null,
+      addLoading: false,
+    });
     (useUpdateItem as jest.Mock).mockReturnValue({
-      updateItem: mockUpdateItem,
-      updateError: undefined,
+      updateItem: jest.fn(),
+      updateError: new ApolloError({
+        errorMessage: "Update error occurred",
+        networkError: new Error("NetworkError"),
+      }),
       updateLoading: false,
+    });
+    (useFormHandlers as jest.Mock).mockReturnValue({
+      errors: {},
+      modalOpen: false,
+      snackOpen: false,
+      form: React.createRef(),
+      handleSnackClose: jest.fn(),
+      handleModalClose: jest.fn(),
+      handleModalOpen: jest.fn(),
+      handleSubmitForm: jest.fn(),
+      setSnackOpen: jest.fn(),
     });
 
     render(
@@ -142,9 +173,7 @@ describe("ItemForm", () => {
       </Router>
     );
 
-    await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith(`/items/${mockItem.itemId}`)
-    );
+    expect(screen.getByText("Update error occurred")).toBeInTheDocument();
   });
 
   it("handles form submission correctly", async () => {

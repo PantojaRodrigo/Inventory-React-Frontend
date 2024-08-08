@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Container, Typography } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Form, Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Item from "../interfaces/Item";
 import LoadingButton from "@mui/lab/LoadingButton";
 
@@ -71,7 +71,7 @@ export default function ItemForm({
               ? "Update Item"
               : "Create New Item"}
           </Typography>
-          <Form noValidate ref={form} onSubmit={handleSubmitForm}>
+          <form noValidate ref={form} onSubmit={handleSubmitForm}>
             {addError !== undefined && (
               <Alert severity="error" sx={{ mb: 1 }}>
                 {addError.message}
@@ -93,7 +93,7 @@ export default function ItemForm({
             >
               {method === "PATCH" ? "Update" : "Add"} item
             </LoadingButton>
-          </Form>
+          </form>
         </Box>
         <Box sx={{ alignItems: "center" }}>
           <Link to="/items" style={{ textDecoration: "none" }}>

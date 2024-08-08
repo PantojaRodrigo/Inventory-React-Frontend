@@ -66,7 +66,24 @@ describe("ItemFormDialog", () => {
     expect(link).toHaveAttribute("href", "/items");
   });
 
-  it("dialog should close when clicking outside of the dialog", () => {
+  test("calls handleModalClose when clicking outside the dialog", () => {
+    render(
+      <Router>
+        <ItemFormDialog
+          modalOpen={true}
+          handleModalClose={mockHandleModalClose}
+        />
+      </Router>
+    );
+
+    act(() => {
+      userEvent.click(document.body);
+    });
+
+    expect(mockHandleModalClose).toHaveBeenCalledTimes(1);
+  });
+  it("calls handleModalClose when pressing 'Esc'", () => {
+    const mockHandleModalClose = jest.fn();
     const renderResult = render(
       <Router>
         <ItemFormDialog
@@ -75,9 +92,9 @@ describe("ItemFormDialog", () => {
         />
       </Router>
     );
-    console.log(document.body);
+
     act(() => {
-      userEvent.click(document.body);
+      fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
     });
 
     expect(mockHandleModalClose).toHaveBeenCalledTimes(1);

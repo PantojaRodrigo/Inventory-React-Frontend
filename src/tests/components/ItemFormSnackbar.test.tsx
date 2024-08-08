@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ItemFormSnackbar from "../../components/ItemFormSnackbar"; // Asegúrate de que la ruta sea correcta
@@ -52,9 +52,9 @@ describe("ItemFormSnackbar", () => {
         handleSnackClose={mockHandleSnackClose}
       />
     );
-
-    jest.advanceTimersByTime(3000);
-
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
     expect(mockHandleSnackClose).toHaveBeenCalledTimes(1);
 
     jest.useRealTimers();

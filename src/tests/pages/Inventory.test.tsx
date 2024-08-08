@@ -1,14 +1,12 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import Inventory from "../../pages/Inventory";
 import { GET_ITEMS_WITH_SEARCH } from "../../queries";
-import NoItems from "../../components/NoItems";
-import ItemsTable from "../../components/ItemsTable";
-import ApolloErrorPage from "../../pages/ApolloErrorPage";
 import { useSearch } from "../../hooks/useSearch";
 import { useDeleteItem } from "../../hooks/useDeleteItem";
 import Item, { Location } from "../../interfaces/Item";
+import { ApolloError } from "@apollo/client";
+import { GraphQLError } from "graphql";
 
 jest.mock("../../hooks/useSearch", () => ({
   useSearch: jest.fn(),
@@ -47,7 +45,7 @@ interface InventoryHeaderProps {
 jest.mock("../../components/InventoryHeader", () => ({
   __esModule: true,
   default: ({ itemsLength, queryLoading, search }: InventoryHeaderProps) => (
-    <div>AAA</div>
+    <div>InventoryHeader</div>
   ),
 }));
 
@@ -141,7 +139,7 @@ const mocks = [
     },
     result: {
       data: {
-        items: [],
+        items: mockItems,
       },
     },
   },
@@ -150,9 +148,6 @@ const mocks = [
 describe("Inventory Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it("should render without crashing", () => {
     (useSearch as jest.Mock).mockReturnValue({
       searchValue: "",
       search: jest.fn(),
@@ -166,12 +161,15 @@ describe("Inventory Component", () => {
       handleSnackClose: jest.fn(),
       error: null,
     });
+  });
+
+  it("Should render Inventory  without crashing ", () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Inventory />
       </MockedProvider>
     );
-    expect(screen.getByText(/AAA/i)).toBeInTheDocument();
+    expect(screen.getByText(/InventoryHeader/i)).toBeInTheDocument();
   });
 
   it("should display NoItems component when there are no items and search is empty", async () => {
@@ -183,24 +181,11 @@ describe("Inventory Component", () => {
         },
         result: {
           data: {
-            items: mockItems,
+            items: [],
           },
         },
       },
     ];
-    (useSearch as jest.Mock).mockReturnValue({
-      searchValue: "",
-      search: jest.fn(),
-    });
-    (useDeleteItem as jest.Mock).mockReturnValue({
-      modalOpen: 0,
-      snackOpen: false,
-      handleModalClose: jest.fn(),
-      handleModalOpen: jest.fn(),
-      handleDeleteItem: jest.fn(),
-      handleSnackClose: jest.fn(),
-      error: null,
-    });
 
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
@@ -213,9 +198,55 @@ describe("Inventory Component", () => {
     });
   });
 
-  it("should display ItemsTable component when there are items", async () => {});
+  it("should display ItemsTable component when there are items", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <Inventory />
+      </MockedProvider>
+    );
+    expect(screen.getByText(/InventoryHeader/i)).toBeInTheDocument();
+    expect(screen.getByText(/ItemsTable/i)).toBeInTheDocument();
+  });
 
-  it("should show ApolloErrorPage on error", async () => {});
+  it("should show ApolloErrorPage on error", async () => {
+    jest.clearAllMocks();
+    (useSearch as jest.Mock).mockReturnValue({
+      searchValue: "",
+      search: jest.fn(),
+    });
+    (useDeleteItem as jest.Mock).mockReturnValue({
+      modalOpen: 0,
+      snackOpen: false,
+      handleModalClose: jest.fn(),
+      handleModalOpen: jest.fn(),
+      handleDeleteItem: jest.fn(),
+      handleSnackClose: jest.fn(),
+      error: null,
+    });
+    const errorMocks = [
+      {
+        request: {
+          query: GET_ITEMS_WITH_SEARCH,
+          variables: { search: "" },
+        },
+        error: new GraphQLError("Cannot connect with the server.", {
+          extensions: {
+            code: "NETWORK_ERROR",
+          },
+        }),
+        result: {
+          data: null,
+        },
+      },
+    ];
+    render(
+      <MockedProvider mocks={errorMocks} addTypename={false}>
+        <Inventory />
+      </MockedProvider>
+    );
 
-  it("should handle delete dialog and snackbar", () => {});
+    await waitFor(() => {
+      expect(screen.getByText("Error")).toBeInTheDocument();
+    });
+  });
 });

@@ -5,6 +5,7 @@ import ItemDetail from "../../pages/ItemDetail";
 //import "@testing-library/jest-dom/extend-expect";
 import { GET_ITEM } from "../../queries";
 import { ApolloError } from "@apollo/client";
+import { GraphQLError } from "graphql";
 
 const mockItem = {
   itemId: "1",
@@ -75,16 +76,17 @@ describe("ItemDetail component", () => {
     expect(screen.getByText("124567890")).toBeInTheDocument();
   });
 
-  it("renders error state when item is not found", async () => {
+  test("renders Server error when server fails", async () => {
     const errorMocks = [
       {
         request: {
           query: GET_ITEM,
           variables: { id: 999 },
         },
-        error: new ApolloError({
-          errorMessage: "An error ocurred",
-          networkError: new Error("NetworkError"),
+        error: new GraphQLError("Cannot connect with the server.", {
+          extensions: {
+            code: "NETWORK_ERROR",
+          },
         }),
       },
     ];
@@ -101,6 +103,28 @@ describe("ItemDetail component", () => {
     });
   });
 
+  test("renders Item not found page when the item does not exist", async () => {
+    const errorMocks = [
+      {
+        request: {
+          query: GET_ITEM,
+          variables: { id: 999 },
+        },
+        error: new GraphQLError("Item not found"),
+      },
+    ];
+    const errorRouter = createMemoryRouter(routes, {
+      initialEntries: ["/items/999"],
+    });
+    render(
+      <MockedProvider mocks={errorMocks} addTypename={false}>
+        <RouterProvider router={errorRouter} />
+      </MockedProvider>
+    );
+    await waitFor(() => {
+      expect(screen.getByText("ItemNotFound")).toBeInTheDocument();
+    });
+  });
   test("navigates back to inventory when button is clicked", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>

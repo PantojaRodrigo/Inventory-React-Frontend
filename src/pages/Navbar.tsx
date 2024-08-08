@@ -17,8 +17,6 @@ import Logo from "../Netlogistik_Logo_Positivo.png";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 
-//import Eslogan from "../../../public/Eslogan_Horizontal.png";
-
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -34,14 +32,15 @@ const Navbar = () => {
       <AppBar position="static" sx={{ backgroundColor: "rgb(255,103,29)" }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
+            {/*Logo Large screens*/}
             <IconButton
               sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
               color="inherit"
               aria-label="logo"
             >
-              <img src={Logo} alt="Logo" style={{ height: "50px" }} />
+              <img src={Logo} alt="Logo-md" style={{ height: "50px" }} />
             </IconButton>
-
+            {/*Small screens*/}
             <Box
               sx={{
                 flexGrow: 1,
@@ -52,7 +51,7 @@ const Navbar = () => {
             >
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label="menu-appbar"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
@@ -65,12 +64,12 @@ const Navbar = () => {
                 sx={{
                   flexShrink: 0,
                   display: { xs: "flex", md: "none" },
-                  mx: "auto", // Centers the logo horizontally
+                  mx: "auto",
                 }}
                 color="inherit"
                 aria-label="logo"
               >
-                <img src={Logo} alt="Logo" style={{ height: "50px" }} />
+                <img src={Logo} alt="Logo-xs" style={{ height: "50px" }} />
               </IconButton>
 
               <Menu
@@ -93,15 +92,22 @@ const Navbar = () => {
               >
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Link to="/items">
-                    <Typography textAlign="center">Inventory</Typography>
+                    <Typography
+                      textAlign="center"
+                      aria-label="Inventory-menu-item"
+                    >
+                      Inventory
+                    </Typography>
                   </Link>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Log In</Typography>
+                  <Typography textAlign="center" aria-label="Login-menu-item">
+                    Log In
+                  </Typography>
                 </MenuItem>
               </Menu>
             </Box>
-
+            {/*Buttons Large screens*/}
             <Box
               sx={{
                 flexGrow: 0,
@@ -119,6 +125,7 @@ const Navbar = () => {
                     fontFamily: "Arial, sans-serif",
                     fontWeight: 700,
                   }}
+                  aria-label="Inventory-button"
                 >
                   Inventory
                 </Button>
@@ -131,6 +138,7 @@ const Navbar = () => {
                   fontFamily: "arial",
                   fontWeight: 700,
                 }}
+                aria-label="Login-button"
               >
                 Login
               </Button>

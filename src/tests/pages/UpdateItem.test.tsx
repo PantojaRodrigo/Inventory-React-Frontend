@@ -8,6 +8,7 @@ import {
 import UpdateItem from "../../pages/UpdateItem";
 import { GET_ITEM } from "../../queries";
 import { ApolloError } from "@apollo/client";
+import { GraphQLError } from "graphql";
 const mockItem = {
   itemId: "1",
   itemName: "Test Item",
@@ -64,9 +65,10 @@ describe("ItemDetail component", () => {
           query: GET_ITEM,
           variables: { id: 1 },
         },
-        error: new ApolloError({
-          errorMessage: "An error ocurred",
-          networkError: new Error("NetworkError"),
+        error: new GraphQLError("Cannot connect with the server.", {
+          extensions: {
+            code: "NETWORK_ERROR",
+          },
         }),
         result: {
           data: {
