@@ -7,6 +7,7 @@ import {
   Routes,
 } from "react-router-dom";
 import Navbar from "../../pages/Navbar";
+import { act } from "react";
 
 jest.mock("../../Netlogistik_Logo_Positivo.png", () => "mocked-logo.png");
 
@@ -50,8 +51,9 @@ describe("Navbar Component", () => {
 
     resizeWindow(500);
     expect(screen.getByLabelText("menu-appbar")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText("menu-appbar"));
+    act(() => {
+      fireEvent.click(screen.getByLabelText("menu-appbar"));
+    });
 
     expect(screen.getByLabelText(/Inventory-menu-item/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Login-menu-item/i)).toBeInTheDocument();
@@ -67,9 +69,9 @@ describe("Navbar Component", () => {
     render(<RouterProvider router={router} />);
 
     expect(screen.queryByText("Items Page")).toBeNull();
-
-    fireEvent.click(screen.getByLabelText(/Inventory-button/i));
-
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/Inventory-button/i));
+    });
     expect(screen.getByText("Items Page")).toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ import ItemDetail from "../../pages/ItemDetail";
 import { GET_ITEM } from "../../queries";
 import { ApolloError } from "@apollo/client";
 import { GraphQLError } from "graphql";
+import { act } from "react";
 
 const mockItem = {
   itemId: "1",
@@ -136,7 +137,9 @@ describe("ItemDetail component", () => {
     });
     const backButton = screen.getByText("Back to inventory");
     expect(router.state.location.pathname).toBe("/items/1");
-    fireEvent.click(backButton);
+    act(() => {
+      fireEvent.click(backButton);
+    });
     //expect(mockNavigate).toHaveBeenCalledWith("/items");
     expect(router.state.location.pathname).toBe("/items");
   });

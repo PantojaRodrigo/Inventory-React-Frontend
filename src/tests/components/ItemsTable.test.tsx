@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import ItemsTable from "../../components/ItemsTable";
@@ -112,19 +112,25 @@ describe("ItemsTable", () => {
 
   test("navigates to item detail on row click", () => {
     const itemCell = screen.getByText(mockItems[0].itemId);
-    fireEvent.click(itemCell);
+    act(() => {
+      fireEvent.click(itemCell);
+    });
     expect(window.location.pathname).toBe(`/${mockItems[0].itemId}`);
   });
 
   test("opens modal on delete button click", () => {
     const deleteButton = screen.getAllByLabelText("delete")[0];
-    fireEvent.click(deleteButton);
+    act(() => {
+      fireEvent.click(deleteButton);
+    });
     expect(handleDeleteItem).toHaveBeenCalledWith(mockItems[0].itemId);
   });
 
   test("changes page on pagination button click", () => {
     const nextPageButton = screen.getByLabelText("next page");
-    fireEvent.click(nextPageButton);
+    act(() => {
+      fireEvent.click(nextPageButton);
+    });
 
     mockItems.slice(5, 6).forEach((item) => {
       expect(screen.getByText(item.itemId)).toBeInTheDocument();

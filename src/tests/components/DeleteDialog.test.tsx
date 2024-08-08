@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 //import "@testing-library/jest-dom/extend-expect";
 import DeleteDialog from "../../components/DeleteDialog";
@@ -26,7 +26,9 @@ describe("DeleteDialog component", () => {
       <DeleteDialog open={true} onClose={onCloseMock} onDelete={onDeleteMock} />
     );
 
-    fireEvent.click(screen.getByText("No"));
+    act(() => {
+      fireEvent.click(screen.getByText("No"));
+    });
     expect(onCloseMock).toHaveBeenCalledTimes(1);
   });
 
@@ -34,8 +36,9 @@ describe("DeleteDialog component", () => {
     render(
       <DeleteDialog open={true} onClose={onCloseMock} onDelete={onDeleteMock} />
     );
-
-    fireEvent.click(screen.getByText("Yes"));
+    act(() => {
+      fireEvent.click(screen.getByText("Yes"));
+    });
     expect(onDeleteMock).toHaveBeenCalledTimes(1);
   });
 

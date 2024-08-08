@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { BrowserRouter as Router, RouterProvider } from "react-router-dom";
@@ -197,7 +197,9 @@ describe("ItemForm", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /Add item/i });
-    fireEvent.click(submitButton);
+    act(() => {
+      fireEvent.click(submitButton);
+    });
 
     await waitFor(() => expect(handleSubmitForm).toHaveBeenCalled());
   });

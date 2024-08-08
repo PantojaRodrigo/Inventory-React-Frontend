@@ -47,8 +47,9 @@ describe("ItemFormDialog", () => {
         />
       </Router>
     );
-
-    fireEvent.click(screen.getByText("Yes"));
+    act(() => {
+      fireEvent.click(screen.getByText("Yes"));
+    });
     expect(mockHandleModalClose).toHaveBeenCalledTimes(1);
   });
 

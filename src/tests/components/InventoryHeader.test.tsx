@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 //import "@testing-library/jest-dom/extend-expect";
 import {
@@ -86,8 +86,9 @@ describe("InventoryHeader component", () => {
 
     const addButton = screen.getByRole("button", { name: /add/i });
     expect(addButton).toBeInTheDocument();
-
-    fireEvent.click(addButton);
+    act(() => {
+      fireEvent.click(addButton);
+    });
     expect(router.state.location.pathname).toBe("/newItem");
   });
 });

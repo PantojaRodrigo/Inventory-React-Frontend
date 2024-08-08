@@ -39,7 +39,9 @@ describe("InventorySnackbar component", () => {
     );
 
     const alertCloseButton = screen.getByLabelText("Close");
-    fireEvent.click(alertCloseButton);
+    act(() => {
+      fireEvent.click(alertCloseButton);
+    });
     expect(mockOnClose).toHaveBeenCalled();
   });
 
