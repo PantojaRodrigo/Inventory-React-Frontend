@@ -14,12 +14,8 @@ import ApolloErrorPage from "../../pages/ApolloErrorPage";
 import { ApolloError } from "@apollo/client";
 
 jest.mock("../../components/FormFields", () => () => <div>FormFields</div>);
-jest.mock("../../components/ItemFormDialog", () => () => (
-  <div>ItemFormDialog</div>
-));
-jest.mock("../../components/ItemFormSnackbar", () => () => (
-  <div>ItemFormSnackbar</div>
-));
+jest.mock("../../components/ItemFormDialog", () => () => <div>ItemFormDialog</div>);
+jest.mock("../../components/ItemFormSnackbar", () => () => <div>ItemFormSnackbar</div>);
 jest.mock("../../pages/ApolloErrorPage", () => {
   return ({ error }: { error: ApolloError }) => <div>{error.message}</div>;
 });
@@ -41,7 +37,7 @@ const mockItem: Item = {
     locationId: 1,
     state: "Test State",
     address: "Test Address",
-    phoneNumber: 1234567890,
+    phoneNumber: "1234567890",
   },
 };
 

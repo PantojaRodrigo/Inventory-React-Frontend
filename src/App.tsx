@@ -4,12 +4,7 @@ import Inventory /*, {
   action as itemDeleteAction, ,
 } */ from "./pages/Inventory";
 
-import {
-  Outlet,
-  RouterProvider,
-  createBrowserRouter,
-  redirect,
-} from "react-router-dom";
+import { Outlet, RouterProvider, createBrowserRouter, redirect } from "react-router-dom";
 import NewItem /* , { action as itemAction } */ from "./pages/NewItem";
 import ItemDetail /*, { loader as itemLoader } */ from "./pages/ItemDetail";
 import ErrorPage from "./pages/ErrorPage";
@@ -35,15 +30,12 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <Inventory />,
-            //loader: itemsLoader,
-            //action: itemDeleteAction,
             errorElement: <ErrorPage />,
           },
           {
             path: "newItem",
             element: <NewItem />,
             errorElement: <ErrorPage />,
-            /* action: itemAction, */
           },
           {
             path: ":itemId",
@@ -61,7 +53,6 @@ const router = createBrowserRouter([
                 errorElement: <ErrorPage />,
               },
             ],
-            //loader: itemLoader,
           },
         ],
       },

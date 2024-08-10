@@ -13,7 +13,7 @@ export function useDeleteItem(searchValue: string) {
     ],
     onCompleted: () => setSnackOpen(true),
     onError: (error) => {
-      console.log(error.message);
+      setSnackOpen(true);
     },
     update: (cache, { data: { deleteItem } }) => {
       const existingItems = cache.readQuery<{ items: Item[] }>({

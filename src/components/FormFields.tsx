@@ -25,6 +25,9 @@ const FormFields: React.FC<FormFieldsProps> = ({ item, errors }) => {
           fullWidth
           autoFocus
           type="number"
+          onKeyDown={(evt) =>
+            ["e", "E", "+", "-", "."].includes(evt.key) && evt.preventDefault()
+          }
           inputProps={{ min: 1, "aria-label": "ID" }}
           defaultValue={item?.itemId}
           disabled={item !== null}
@@ -65,6 +68,9 @@ const FormFields: React.FC<FormFieldsProps> = ({ item, errors }) => {
           id="locationId"
           label="Location ID"
           type="number"
+          onKeyDown={(evt) =>
+            ["e", "E", "+", "-", "."].includes(evt.key) && evt.preventDefault()
+          }
           inputProps={{ min: 1, "aria-label": "Location ID" }}
           defaultValue={item?.location.locationId}
           error={hasErrors("locationId")}
@@ -99,10 +105,17 @@ const FormFields: React.FC<FormFieldsProps> = ({ item, errors }) => {
           fullWidth
           name="number"
           label="Phone number"
-          inputProps={{ "aria-label": "Phone number" }}
+          inputProps={{
+            "aria-label": "Phone number",
+          }}
           id="number"
           type="number"
+          onKeyDown={(evt) =>
+            ["e", "E", "+", "-", "."].includes(evt.key) && evt.preventDefault()
+          }
           defaultValue={item?.location.phoneNumber}
+          error={hasErrors("phoneNumber")}
+          helperText={hasErrors("phoneNumber") ? errors!.phoneNumber : ""}
         />
       </Grid>
     </Grid>

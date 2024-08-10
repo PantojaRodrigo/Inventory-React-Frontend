@@ -13,7 +13,7 @@ describe("FormFields component", () => {
       locationId: 101,
       state: "Test State",
       address: "123 Test St",
-      phoneNumber: 1234567890,
+      phoneNumber: "1234567890",
     },
   };
 
@@ -33,18 +33,12 @@ describe("FormFields component", () => {
 
     expect(screen.getByLabelText("ID")).toHaveValue(mockItem.itemId);
     expect(screen.getByLabelText("Item Name")).toHaveValue(mockItem.itemName);
-    expect(screen.getByLabelText("Item Description")).toHaveValue(
-      mockItem.description
-    );
-    expect(screen.getByLabelText("Location ID")).toHaveValue(
-      mockItem.location.locationId
-    );
+    expect(screen.getByLabelText("Item Description")).toHaveValue(mockItem.description);
+    expect(screen.getByLabelText("Location ID")).toHaveValue(mockItem.location.locationId);
     expect(screen.getByLabelText("State")).toHaveValue(mockItem.location.state);
-    expect(screen.getByLabelText("Address")).toHaveValue(
-      mockItem.location.address
-    );
+    expect(screen.getByLabelText("Address")).toHaveValue(mockItem.location.address);
     expect(screen.getByLabelText("Phone number")).toHaveValue(
-      mockItem.location.phoneNumber
+      parseInt(mockItem.location.phoneNumber)
     );
   });
 

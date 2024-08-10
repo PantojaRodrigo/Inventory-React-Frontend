@@ -32,22 +32,12 @@ export function useFormHandlers(
   method: string,
   addItem: (
     options?:
-      | MutationFunctionOptions<
-          any,
-          OperationVariables,
-          DefaultContext,
-          ApolloCache<any>
-        >
+      | MutationFunctionOptions<any, OperationVariables, DefaultContext, ApolloCache<any>>
       | undefined
   ) => Promise<FetchResult<any>>,
   updateItem: (
     options?:
-      | MutationFunctionOptions<
-          any,
-          OperationVariables,
-          DefaultContext,
-          ApolloCache<any>
-        >
+      | MutationFunctionOptions<any, OperationVariables, DefaultContext, ApolloCache<any>>
       | undefined
   ) => Promise<FetchResult<any>>
 ) {
@@ -56,15 +46,12 @@ export function useFormHandlers(
   const [snackOpen, setSnackOpen] = useState(false);
   const form = useRef<HTMLFormElement>(null);
 
-  const handleSnackClose = useCallback(
-    (event?: React.SyntheticEvent | Event, reason?: string) => {
-      if (reason === "clickaway") {
-        return;
-      }
-      setSnackOpen(false);
-    },
-    []
-  );
+  const handleSnackClose = useCallback((event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackOpen(false);
+  }, []);
 
   const handleModalOpen = useCallback(() => setModalOpen(true), []);
   const handleModalClose = useCallback(() => {
@@ -78,6 +65,12 @@ export function useFormHandlers(
     if (Math.floor(+id) !== +id) return `${field} must be integer`;
     return null;
   };
+  const validateInt = (value: string, field: string): string | null => {
+    if (!value) return null;
+    if (+value < 1) return `${field} must be positive`;
+    if (Math.floor(+value) !== +value) return `${field} must be integer`;
+    return null;
+  };
 
   const validateForm = (formData: FormData): ErrorMap => {
     const errors: ErrorMap = {};
@@ -85,13 +78,11 @@ export function useFormHandlers(
     if (errorId) errors.id = errorId;
     if (formData.get("itemName")?.toString().trim() === "")
       errors.itemName = "Item Name is required";
-    const errorLocId = validateId(
-      formData.get("locationId") as string,
-      "Location ID"
-    );
+    const errorLocId = validateId(formData.get("locationId") as string, "Location ID");
     if (errorLocId) errors.locationId = errorLocId;
-    if (formData.get("state")?.toString().trim() === "")
-      errors.state = "State is required";
+    if (formData.get("state")?.toString().trim() === "") errors.state = "State is required";
+    const errorPhoneNumber = validateInt(formData.get("number") as string, "Phone number");
+    if (errorPhoneNumber) errors.phoneNumber = errorPhoneNumber;
     return errors;
   };
 
@@ -109,7 +100,7 @@ export function useFormHandlers(
           locationId: parseInt(formData.get("locationId") as string),
           state: formData.get("state")?.toString().trim() as string,
           address: formData.get("address")?.toString().trim() as string,
-          phoneNumber: formData.get("number") as unknown as number,
+          phoneNumber: formData.get("number") as string,
         };
         const newItem: Item = {
           itemId: parseInt(formData.get("id") as string),
@@ -129,11 +120,13 @@ export function useFormHandlers(
           updateItem({
             variables: { id: newItem.itemId, newItem },
             update: (cache: ApolloCache<any>, { data: { updateItem } }) => {
-              const existingItems = cache.readQuery({
+              let existingItems = cache.readQuery({
                 query: GET_ITEMS_WITH_SEARCH,
                 variables: { search: "" },
               }) as { items: Item[] };
-              console.log(updateItem);
+              if (!existingItems.items) {
+                existingItems.items = [];
+              }
 
               const newItems = existingItems.items.map((item) =>
                 item.itemId === updateItem.itemId ? updateItem : item

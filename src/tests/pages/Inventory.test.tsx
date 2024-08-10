@@ -17,13 +17,7 @@ jest.mock("../../hooks/useDeleteItem", () => ({
 }));
 jest.mock("../../components/ItemsTable", () => ({
   __esModule: true,
-  default: ({
-    items,
-    handleModalOpen,
-  }: {
-    items: Item[];
-    handleModalOpen: Function;
-  }) => (
+  default: ({ items, handleModalOpen }: { items: Item[]; handleModalOpen: Function }) => (
     <div>
       <div>ItemsTable</div>
       {items.map((item) => (
@@ -50,9 +44,7 @@ jest.mock("../../components/InventoryHeader", () => ({
 }));
 
 jest.mock("../../components/DeleteDialog", () => () => <div>DeleteDialog</div>);
-jest.mock("../../components/InventorySnackbar", () => () => (
-  <div>InventorySnackbar</div>
-));
+jest.mock("../../components/InventorySnackbar", () => () => <div>InventorySnackbar</div>);
 jest.mock("../../components/NoItems", () => () => <div>NoItems</div>);
 jest.mock("../../pages/ApolloErrorPage", () => () => <div>Error</div>);
 const location: Location[] = [
@@ -60,37 +52,37 @@ const location: Location[] = [
     locationId: 1,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 2,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 3,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 4,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 5,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 6,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
 ];
 const mockItems: Item[] = [

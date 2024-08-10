@@ -9,5 +9,5 @@ export interface Location {
   locationId: number;
   state: string;
   address: string;
-  phoneNumber: number;
+  phoneNumber: string;
 }

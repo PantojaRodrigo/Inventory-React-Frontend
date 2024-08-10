@@ -8,37 +8,37 @@ const location: Location[] = [
     locationId: 1,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 2,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 3,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 4,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 5,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
   {
     locationId: 6,
     address: "MainSt",
     state: "California",
-    phoneNumber: 991923,
+    phoneNumber: "991923",
   },
 ];
 const mockItems: Item[] = [
@@ -86,11 +86,7 @@ describe("ItemsTable", () => {
   beforeEach(() => {
     render(
       <Router>
-        <ItemsTable
-          items={mockItems}
-          handleDeleteItem={handleDeleteItem}
-          loading={false}
-        />
+        <ItemsTable items={mockItems} handleDeleteItem={handleDeleteItem} loading={false} />
       </Router>
     );
   });

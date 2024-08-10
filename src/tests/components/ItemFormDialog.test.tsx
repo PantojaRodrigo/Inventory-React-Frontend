@@ -13,25 +13,17 @@ describe("ItemFormDialog", () => {
   it("renders the dialog when modalOpen is true", () => {
     render(
       <Router>
-        <ItemFormDialog
-          modalOpen={true}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={true} handleModalClose={mockHandleModalClose} />
       </Router>
     );
 
-    expect(
-      screen.getByText("Do you want to keep adding items?")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Do you want to keep adding items?")).toBeInTheDocument();
   });
 
   it("does not render the dialog when modalOpen is false", () => {
     const { queryByText } = render(
       <Router>
-        <ItemFormDialog
-          modalOpen={false}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={false} handleModalClose={mockHandleModalClose} />
       </Router>
     );
 
@@ -41,10 +33,7 @@ describe("ItemFormDialog", () => {
   it('calls handleModalClose when "Yes" button is clicked', () => {
     render(
       <Router>
-        <ItemFormDialog
-          modalOpen={true}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={true} handleModalClose={mockHandleModalClose} />
       </Router>
     );
     act(() => {
@@ -56,10 +45,7 @@ describe("ItemFormDialog", () => {
   it("renders a link to the inventory page", () => {
     render(
       <Router>
-        <ItemFormDialog
-          modalOpen={true}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={true} handleModalClose={mockHandleModalClose} />
       </Router>
     );
 
@@ -70,13 +56,10 @@ describe("ItemFormDialog", () => {
   test("calls handleModalClose when clicking outside the dialog", () => {
     render(
       <Router>
-        <ItemFormDialog
-          modalOpen={true}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={true} handleModalClose={mockHandleModalClose} />
       </Router>
     );
-
+    //TODO no supe como "clickear afuera del modal"
     act(() => {
       userEvent.click(document.body);
     });
@@ -87,10 +70,7 @@ describe("ItemFormDialog", () => {
     const mockHandleModalClose = jest.fn();
     const renderResult = render(
       <Router>
-        <ItemFormDialog
-          modalOpen={true}
-          handleModalClose={mockHandleModalClose}
-        />
+        <ItemFormDialog modalOpen={true} handleModalClose={mockHandleModalClose} />
       </Router>
     );
 
