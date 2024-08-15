@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -9,18 +9,14 @@ import {
   Box,
   Container,
   Menu,
-  Tooltip,
+  MenuItem,
 } from "@mui/material";
-import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "../Netlogistik_Logo_Positivo.png";
-import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const Navbar = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -92,10 +88,7 @@ const Navbar = () => {
               >
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Link to="/items">
-                    <Typography
-                      textAlign="center"
-                      aria-label="Inventory-menu-item"
-                    >
+                    <Typography textAlign="center" aria-label="Inventory-menu-item">
                       Inventory
                     </Typography>
                   </Link>

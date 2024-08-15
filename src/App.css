@@ -81,3 +81,13 @@
   color: blue;
   animation: rotate 1s linear infinite;
 }
+
+a {
+  text-decoration: none;
+}
+@media screen and (max-width: 600px) {
+  .MuiTablePagination-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

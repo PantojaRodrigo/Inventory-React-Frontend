@@ -22,41 +22,31 @@ import EditIcon from "@mui/icons-material/Edit";
 import TableRowsLoader from "./TableRowsLoader";
 import { visuallyHidden } from "@mui/utils";
 import { AnimatePresence, motion } from "framer-motion";
+
 interface TablePaginationActionsProps {
   count: number;
   page: number;
   rowsPerPage: number;
-  onPageChange: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    newPage: number
-  ) => void;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
 
-  const handleFirstPageButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, 0);
   };
-  const handleBackButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, page - 1);
   };
-  const handleNextButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, page + 1);
   };
-  const handleLastPageButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+    <Box sx={{ justifyContent: { xs: "space-between" }, display: "flex", flexShrink: 0, ml: 2 }}>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -64,27 +54,15 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
       >
         {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        {theme.direction === "rtl" ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
       >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
+        {theme.direction === "rtl" ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
@@ -113,13 +91,9 @@ export default function ItemsTable({
   const navigate = useNavigate();
   console.log(">>Renderizando Tabla.tsx");
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - items.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - items.length) : 0;
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
@@ -153,18 +127,19 @@ export default function ItemsTable({
   return (
     <>
       <TableContainer component={Paper}>
-        <Table
-          sx={{ minWidth: 400 }}
-          aria-label="custom pagination table"
-          stickyHeader
-          size="small"
-        >
+        <Table aria-label="custom pagination table" stickyHeader size="small">
           <TableHead>
             <TableRow>
               <TableCell
                 align="center"
                 style={{ cursor: "pointer" }}
                 sortDirection={orderBy === "itemId" ? order : false}
+                sx={{
+                  width: {
+                    xs: "50px",
+                    sm: "max-content",
+                  },
+                }}
               >
                 <TableSortLabel
                   active={orderBy === "itemId"}
@@ -174,9 +149,7 @@ export default function ItemsTable({
                   ID
                   {orderBy === "itemId" ? (
                     <Box component="span" sx={visuallyHidden}>
-                      {order === "desc"
-                        ? "sorted descending"
-                        : "sorted ascending"}
+                      {order === "desc" ? "sorted descending" : "sorted ascending"}
                     </Box>
                   ) : null}
                 </TableSortLabel>
@@ -194,9 +167,7 @@ export default function ItemsTable({
                   Name
                   {orderBy === "itemName" ? (
                     <Box component="span" sx={visuallyHidden}>
-                      {order === "desc"
-                        ? "sorted descending"
-                        : "sorted ascending"}
+                      {order === "desc" ? "sorted descending" : "sorted ascending"}
                     </Box>
                   ) : null}
                 </TableSortLabel>
@@ -205,6 +176,7 @@ export default function ItemsTable({
                 align="left"
                 style={{ cursor: "pointer" }}
                 sortDirection={orderBy === "description" ? order : false}
+                sx={{ display: { xs: "none", sm: "table-cell" } }}
               >
                 <TableSortLabel
                   active={orderBy === "description"}
@@ -214,14 +186,12 @@ export default function ItemsTable({
                   Description
                   {orderBy === "description" ? (
                     <Box component="span" sx={visuallyHidden}>
-                      {order === "desc"
-                        ? "sorted descending"
-                        : "sorted ascending"}
+                      {order === "desc" ? "sorted descending" : "sorted ascending"}
                     </Box>
                   ) : null}
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="right" sx={{ width: 56 }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -229,38 +199,26 @@ export default function ItemsTable({
               <TableRowsLoader rowsNum={5} />
             ) : (
               (rowsPerPage > 0
-                ? sortedItems.slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
+                ? sortedItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 : sortedItems
               ).map((item) => (
                 <TableRow key={item.itemId}>
-                  <TableCell
-                    onClick={() => navigate(`${item.itemId}`)}
-                    align="center"
-                  >
+                  <TableCell onClick={() => navigate(`${item.itemId}`)} align="center">
                     {item.itemId}
                   </TableCell>
-                  <TableCell
-                    onClick={() => navigate(`${item.itemId}`)}
-                    align="left"
-                  >
+                  <TableCell onClick={() => navigate(`${item.itemId}`)} align="left">
                     {item.itemName}
                   </TableCell>
                   <TableCell
+                    sx={{ display: { xs: "none", sm: "table-cell" } }}
                     onClick={() => navigate(`${item.itemId}`)}
                     align="left"
                   >
                     {item.description}
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" sx={{ width: 56 }}>
                     <Link to={`/items/${item.itemId}/newItem`}>
-                      <IconButton
-                        aria-label="update"
-                        edge="start"
-                        className="rotate-on-hover"
-                      >
+                      <IconButton aria-label="update" edge="start" className="rotate-on-hover">
                         <EditIcon />
                       </IconButton>
                     </Link>

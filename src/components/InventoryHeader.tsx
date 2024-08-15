@@ -11,27 +11,23 @@ interface InventoryHeaderProps {
   search: (str: string) => void;
 }
 
-const InventoryHeader: React.FC<InventoryHeaderProps> = ({
-  itemsLength,
-  queryLoading,
-  search,
-}) => (
+const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoading, search }) => (
   <Grid
     container
     direction="row"
     justifyContent="space-between"
     maxWidth="md"
     spacing={1}
-    marginY={2}
+    marginY={1}
   >
-    <Grid item xs={5} md={7} sx={{ my: "auto" }}>
+    <Grid item xs={12} sm={6} md={7} minWidth="100px" sx={{ my: "auto" }}>
       {!queryLoading && (
         <Typography variant="h6" gutterBottom marginY="auto">
           Showing {itemsLength} items
         </Typography>
       )}
     </Grid>
-    <Grid item xs={5} md={3} sx={{ my: "auto" }} minWidth={50}>
+    <Grid item xs={9} sm={4} md={3} sx={{ my: "auto" }} minWidth={50}>
       <SearchField searchFn={search} />
     </Grid>
     <Grid item>
