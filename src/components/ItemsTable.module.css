@@ -67,13 +67,12 @@ a {
 }
 
 .tableRow:nth-child(even) {
-  background-color: rgba(255, 103, 29, 0.1);
+  background-color: #0485b036;
 }
 .tableRow:hover {
   background-color: white;
   cursor: pointer;
-
-  transform: scale(1.01);
+  transform: scale(1.02);
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }

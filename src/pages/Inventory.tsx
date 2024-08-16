@@ -33,10 +33,7 @@ export default function Inventory() {
   } = useQuery(GET_ITEMS_WITH_SEARCH, {
     variables: { search: searchValue },
   });
-  if (
-    queryError?.cause?.extensions &&
-    typeof queryError.cause.extensions === "object"
-  ) {
+  if (queryError?.cause?.extensions && typeof queryError.cause.extensions === "object") {
     const extensions = queryError.cause.extensions as { [key: string]: any };
     if (extensions.code === "NETWORK_ERROR") {
       return <ApolloErrorPage error={queryError} />;
@@ -47,11 +44,9 @@ export default function Inventory() {
   return (
     <>
       <Container maxWidth="md">
-        <InventoryHeader
-          itemsLength={items.length}
-          queryLoading={queryLoading}
-          search={search}
-        />
+        <InventoryHeader itemsLength={items.length} queryLoading={queryLoading} search={search} />
+      </Container>
+      <Container maxWidth="md" sx={{ px: { xs: 0, sm: 2, md: 3 } }}>
         {!queryLoading && items.length == 0 ? (
           <NoItems error={queryError} empty={!searchValue}></NoItems>
         ) : (
@@ -62,16 +57,8 @@ export default function Inventory() {
           ></ItemsTable>
         )}
       </Container>
-      <InventorySnackbar
-        open={snackOpen}
-        error={error}
-        onClose={handleSnackClose}
-      />
-      <DeleteDialog
-        open={modalOpen !== 0}
-        onClose={handleModalClose}
-        onDelete={handleDeleteItem}
-      />
+      <InventorySnackbar open={snackOpen} error={error} onClose={handleSnackClose} />
+      <DeleteDialog open={modalOpen !== 0} onClose={handleModalClose} onDelete={handleDeleteItem} />
     </>
   );
 }

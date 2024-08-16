@@ -127,7 +127,7 @@ export default function ItemsTable({
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ overflow: "visible" }}>
         <Table aria-label="custom pagination table" stickyHeader size="small" padding="none">
           <TableHead>
             <TableRow className={styles.tableHeader}>
@@ -249,7 +249,7 @@ export default function ItemsTable({
             )}
 
             {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
+              <TableRow style={{ height: 40.67 * emptyRows }}>
                 <TableCell colSpan={6} />
               </TableRow>
             )}
