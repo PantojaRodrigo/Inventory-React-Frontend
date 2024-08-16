@@ -26,11 +26,11 @@ const Navbar = () => {
   return (
     <>
       <AppBar position="static" sx={{ backgroundColor: "rgb(255,103,29)" }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Toolbar disableGutters>
             {/*Logo Large screens*/}
             <IconButton
-              sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+              sx={{ display: { xs: "none", sm: "flex" }, mr: 1 }}
               color="inherit"
               aria-label="logo"
             >
@@ -40,7 +40,7 @@ const Navbar = () => {
             <Box
               sx={{
                 flexGrow: 1,
-                display: { xs: "flex", md: "none" },
+                display: { xs: "flex", sm: "none" },
                 justifyContent: "space-between",
                 alignItems: "center",
               }}
@@ -59,7 +59,7 @@ const Navbar = () => {
               <IconButton
                 sx={{
                   flexShrink: 0,
-                  display: { xs: "flex", md: "none" },
+                  display: { xs: "flex", sm: "none" },
                   mx: "auto",
                 }}
                 color="inherit"
@@ -83,7 +83,7 @@ const Navbar = () => {
                 open={Boolean(anchorElNav)}
                 onClose={handleCloseNavMenu}
                 sx={{
-                  display: { xs: "block", md: "none" },
+                  display: { xs: "block", sm: "none" },
                 }}
               >
                 <MenuItem onClick={handleCloseNavMenu}>
@@ -104,7 +104,7 @@ const Navbar = () => {
             <Box
               sx={{
                 flexGrow: 0,
-                display: { xs: "none", md: "flex" },
+                display: { xs: "none", sm: "flex" },
                 justifyContent: "space-between",
                 width: "100%",
               }}

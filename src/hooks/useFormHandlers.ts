@@ -62,12 +62,14 @@ export function useFormHandlers(
   const validateId = (id: string, field: string): string | null => {
     if (id === "") return `${field} is required`;
     if (+id < 1) return `${field} must be positive`;
+    if (+id > 2147483646) return `${field} is too large`;
     if (Math.floor(+id) !== +id) return `${field} must be integer`;
     return null;
   };
   const validateInt = (value: string, field: string): string | null => {
     if (!value) return null;
     if (+value < 1) return `${field} must be positive`;
+
     if (Math.floor(+value) !== +value) return `${field} must be integer`;
     return null;
   };

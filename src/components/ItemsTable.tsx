@@ -22,6 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import TableRowsLoader from "./TableRowsLoader";
 import { visuallyHidden } from "@mui/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import styles from "./ItemsTable.module.css";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -127,9 +128,9 @@ export default function ItemsTable({
   return (
     <>
       <TableContainer component={Paper}>
-        <Table aria-label="custom pagination table" stickyHeader size="small">
+        <Table aria-label="custom pagination table" stickyHeader size="small" padding="none">
           <TableHead>
-            <TableRow>
+            <TableRow className={styles.tableHeader}>
               <TableCell
                 align="center"
                 style={{ cursor: "pointer" }}
@@ -137,8 +138,9 @@ export default function ItemsTable({
                 sx={{
                   width: {
                     xs: "50px",
-                    sm: "max-content",
+                    sm: "10%",
                   },
+                  p: 1,
                 }}
               >
                 <TableSortLabel
@@ -158,6 +160,7 @@ export default function ItemsTable({
                 align="left"
                 style={{ cursor: "pointer" }}
                 sortDirection={orderBy === "itemName" ? order : false}
+                sx={{ p: 1 }}
               >
                 <TableSortLabel
                   active={orderBy === "itemName"}
@@ -176,7 +179,9 @@ export default function ItemsTable({
                 align="left"
                 style={{ cursor: "pointer" }}
                 sortDirection={orderBy === "description" ? order : false}
-                sx={{ display: { xs: "none", sm: "table-cell" } }}
+                sx={{
+                  display: { xs: "none", sm: "table-cell" },
+                }}
               >
                 <TableSortLabel
                   active={orderBy === "description"}
@@ -201,12 +206,20 @@ export default function ItemsTable({
               (rowsPerPage > 0
                 ? sortedItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 : sortedItems
-              ).map((item) => (
-                <TableRow key={item.itemId}>
-                  <TableCell onClick={() => navigate(`${item.itemId}`)} align="center">
+              ).map((item, index) => (
+                <TableRow
+                  key={item.itemId}
+                  className={styles.tableRow}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <TableCell
+                    sx={{ px: 1 }}
+                    onClick={() => navigate(`${item.itemId}`)}
+                    align="center"
+                  >
                     {item.itemId}
                   </TableCell>
-                  <TableCell onClick={() => navigate(`${item.itemId}`)} align="left">
+                  <TableCell sx={{ px: 1 }} onClick={() => navigate(`${item.itemId}`)} align="left">
                     {item.itemName}
                   </TableCell>
                   <TableCell
@@ -216,18 +229,17 @@ export default function ItemsTable({
                   >
                     {item.description}
                   </TableCell>
-                  <TableCell align="right" sx={{ width: 56 }}>
+                  <TableCell align="right" sx={{ width: 80 }}>
                     <Link to={`/items/${item.itemId}/newItem`}>
-                      <IconButton aria-label="update" edge="start" className="rotate-on-hover">
+                      <IconButton aria-label="update" className={styles.rotateOnHover}>
                         <EditIcon />
                       </IconButton>
                     </Link>
 
                     <IconButton
                       aria-label="delete"
-                      edge="end"
                       onClick={() => handleDeleteItem(item.itemId)}
-                      className="shake-on-hover"
+                      className={styles.shakeOnHover}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -245,6 +257,7 @@ export default function ItemsTable({
           <TableFooter>
             <TableRow>
               <TablePagination
+                sx={{ pl: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                 colSpan={4}
                 count={items.length}

@@ -1,3 +1,83 @@
-.MuiTablePagination-toolbar {
-  flex-wrap: wrap;
+@keyframes shake {
+  0% {
+    transform: translateX(0) rotate(0);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-10deg);
+  }
+  50% {
+    transform: translateX(3px) rotate(10deg);
+  }
+  75% {
+    transform: translateX(-3px) rotate(-10deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+}
+
+.shakeOnHover {
+  transition: color 0.3s ease;
+}
+
+.shakeOnHover:hover {
+  color: red;
+  animation: shake 0.5s ease;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotateOnHover {
+  transition: color 0.3s ease;
+}
+
+.rotateOnHover:hover {
+  color: blue;
+  animation: rotate 1s linear infinite;
+}
+
+a {
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.tableRow {
+  opacity: 0;
+  animation: fadeIn 300ms ease-out forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tableRow:nth-child(odd) {
+  background-color: rgba(0, 196, 179, 0.1);
+}
+
+.tableRow:nth-child(even) {
+  background-color: rgba(255, 103, 29, 0.1);
+}
+.tableRow:hover {
+  background-color: white;
+  cursor: pointer;
+
+  transform: scale(1.01);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+.tableHeader {
+  color: white;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }

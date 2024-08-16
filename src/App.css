@@ -36,58 +36,14 @@
     transform: rotate(360deg);
   }
 }
-
-@keyframes shake {
-  0% {
-    transform: translateX(0) rotate(0);
-  }
-  25% {
-    transform: translateX(-3px) rotate(-10deg);
-  }
-  50% {
-    transform: translateX(3px) rotate(10deg);
-  }
-  75% {
-    transform: translateX(-3px) rotate(-10deg);
-  }
-  100% {
-    transform: translateX(0) rotate(0);
-  }
-}
-
-.shake-on-hover {
-  transition: color 0.3s ease;
-}
-
-.shake-on-hover:hover {
-  color: red;
-  animation: shake 0.5s ease;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.rotate-on-hover {
-  transition: color 0.3s ease;
-}
-
-.rotate-on-hover:hover {
-  color: blue;
-  animation: rotate 1s linear infinite;
-}
-
-a {
-  text-decoration: none;
-}
 @media screen and (max-width: 600px) {
   .MuiTablePagination-toolbar {
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+
+.MuiTableSortLabel-iconDirectionAsc,
+.MuiTableSortLabel-iconDirectionDesc {
+  margin-right: 0;
 }

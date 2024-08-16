@@ -14,13 +14,7 @@ import ApolloErrorPage from "../pages/ApolloErrorPage";
 interface ErrorMap {
   [key: string]: string;
 }
-export default function ItemForm({
-  method,
-  item,
-}: {
-  method: string;
-  item: Item | null;
-}) {
+export default function ItemForm({ method, item }: { method: string; item: Item | null }) {
   const params = useParams();
   const navigate = useNavigate();
   const { addItem, addError, addLoading } = useAddItem(() => {
@@ -44,15 +38,9 @@ export default function ItemForm({
   } = useFormHandlers(item, method, addItem, updateItem);
 
   if (addError?.networkError || updateError?.networkError) {
-    return (
-      <ApolloErrorPage
-        error={addError ? addError! : updateError!}
-      ></ApolloErrorPage>
-    );
+    return <ApolloErrorPage error={addError ? addError! : updateError!}></ApolloErrorPage>;
   } else if (addError || updateError) {
-    <ApolloErrorPage
-      error={addError ? addError! : updateError!}
-    ></ApolloErrorPage>;
+    <ApolloErrorPage error={addError ? addError! : updateError!}></ApolloErrorPage>;
   }
   return (
     <>
@@ -60,16 +48,14 @@ export default function ItemForm({
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 3,
+            marginTop: 2,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
           <Typography component="h1" variant="h5" mb={1}>
-            {method === "PATCH" && item !== null
-              ? "Update Item"
-              : "Create New Item"}
+            {method === "PATCH" && item !== null ? "Update Item" : "Create New Item"}
           </Typography>
           <form noValidate ref={form} onSubmit={handleSubmitForm}>
             {addError !== undefined && (
@@ -101,14 +87,8 @@ export default function ItemForm({
           </Link>
         </Box>
       </Container>
-      <ItemFormDialog
-        modalOpen={modalOpen}
-        handleModalClose={handleModalClose}
-      />
-      <ItemFormSnackbar
-        snackOpen={snackOpen}
-        handleSnackClose={handleSnackClose}
-      />
+      <ItemFormDialog modalOpen={modalOpen} handleModalClose={handleModalClose} />
+      <ItemFormSnackbar snackOpen={snackOpen} handleSnackClose={handleSnackClose} />
     </>
   );
 }
