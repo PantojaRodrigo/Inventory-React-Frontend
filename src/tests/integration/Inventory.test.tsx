@@ -302,6 +302,25 @@ describe("Inventory Component", () => {
     expect(screen.queryByText(/Item 5/i)).toBeNull();
     expect(screen.getByText(/Item 6/i)).toBeInTheDocument();
   });
+  test("should search an item unsuccesfully", async () => {
+    setup();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Showing 6 items/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/Item 1/i)).toBeInTheDocument();
+
+    const input = screen.getByLabelText("Search items") as HTMLInputElement;
+
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "asdjalksdj" } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Showing 0 items/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/No items found/i)).toBeInTheDocument();
+  });
   //  PAGINATION FUNCTIONALITY
   test("should show first 6 items", async () => {
     setup();
