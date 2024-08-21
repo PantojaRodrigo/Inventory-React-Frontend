@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback } from "react";
+import { useQuery } from "@apollo/client";
+import {GET_FILTERED_ITEMS} from "../queries";
 
 export function useSearch() {
   const navigate = useNavigate();
@@ -16,3 +18,10 @@ export function useSearch() {
 
   return { searchValue, search };
 }
+
+// export function useFilters() {
+//     const {data, loading, error} = useQuery(GET_FILTERED_ITEMS, {
+//         variables: {search: searchValue}
+//     });
+//
+// }

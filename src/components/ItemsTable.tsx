@@ -23,6 +23,8 @@ import TableRowsLoader from "./TableRowsLoader";
 import { visuallyHidden } from "@mui/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ItemsTable.module.css";
+import {FiltersProps} from "../pages/Inventory"
+import {Dispatch} from "react";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -80,10 +82,14 @@ export default function ItemsTable({
   items,
   handleDeleteItem,
   loading,
+  filters,
+  setFilters
 }: {
   items: Item[];
   handleDeleteItem: Function;
   loading: boolean;
+  filters: FiltersProps;
+  setFilters: Dispatch<FiltersProps>;
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);

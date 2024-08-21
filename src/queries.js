@@ -9,6 +9,23 @@ export const GET_ITEMS_WITH_SEARCH = gql`
     }
   }
 `;
+export const GET_FILTERED_ITEMS = gql`
+  query getFilteredItems($id: Int, $name: String, $state: String) {
+    filteredItems(id: $id, name: $name, state: $state) {
+      itemId
+      itemName
+      description
+      location {
+        state
+      }
+    }
+  }
+`
+export const GET_STATES = gql`
+  query getStates {
+    states
+  }
+`
 
 export const DELETE_ITEM = gql`
   mutation deleteItem($id: Int!) {

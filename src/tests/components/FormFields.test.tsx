@@ -38,7 +38,7 @@ describe("FormFields component", () => {
     expect(screen.getByLabelText("State")).toHaveValue(mockItem.location.state);
     expect(screen.getByLabelText("Address")).toHaveValue(mockItem.location.address);
     expect(screen.getByLabelText("Phone number")).toHaveValue(
-      parseInt(mockItem.location.phoneNumber)
+      mockItem.location.phoneNumber
     );
   });
 
@@ -60,7 +60,7 @@ describe("FormFields component", () => {
     expect(screen.getByLabelText("Location ID")).toHaveValue(null);
     expect(screen.getByLabelText("State")).toHaveValue("");
     expect(screen.getByLabelText("Address")).toHaveValue("");
-    expect(screen.getByLabelText("Phone number")).toHaveValue(null);
+    expect(screen.getByLabelText("Phone number")).toHaveValue("");
   });
 
   test("ID field is disabled when item is not null", () => {
