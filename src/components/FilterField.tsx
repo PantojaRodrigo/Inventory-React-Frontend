@@ -1,8 +1,5 @@
-import {IconButton, InputAdornment, MenuItem, TextField} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import debounce from "@mui/material";
+import {MenuItem, TextField} from "@mui/material";
+import React from "react";
 
 interface FilterFieldProps {
     value: string | number;
@@ -15,7 +12,6 @@ const FilterField = ({ value, onChange, options, name, label }: FilterFieldProps
 
     return (
         <TextField
-            id="search-input"
             name={name}
             label={label}
             size="small"
@@ -25,6 +21,7 @@ const FilterField = ({ value, onChange, options, name, label }: FilterFieldProps
             onChange={onChange}
             fullWidth
             sx={{ marginY: "auto", pl: 0 }}
+            inputProps={{"aria-label": name}}
         >
             {options && <MenuItem value="">&nbsp;</MenuItem>}
             {options?.map((option) => (

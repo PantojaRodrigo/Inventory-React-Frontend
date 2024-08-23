@@ -1,10 +1,9 @@
 import { Container } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
 import Item from "../interfaces/Item";
-import React, {useCallback, useState} from "react";
+import React, { useState} from "react";
 import ItemsTable from "../components/ItemsTable";
-import {DELETE_ITEM, GET_FILTERED_ITEMS, GET_ITEMS_WITH_SEARCH} from "../queries";
-import { useMutation, useQuery } from "@apollo/client";
+import {GET_FILTERED_ITEMS} from "../queries";
+import { useQuery } from "@apollo/client";
 import NoItems from "../components/NoItems";
 import DeleteDialog from "../components/DeleteDialog";
 import InventorySnackbar from "../components/InventorySnackbar";
@@ -69,8 +68,13 @@ export default function Inventory() {
 
   return (
     <>
-      <Container maxWidth="md">
-        <InventoryHeader itemsLength={items.length} queryLoading={queryLoading} filters={filters} setFilters={setFilters} />
+      <Container maxWidth='md'>
+        <InventoryHeader
+          itemsLength={items.length}
+          queryLoading={queryLoading}
+          filters={filters}
+          setFilters={setFilters}
+        />
       </Container>
       <Container maxWidth="md" sx={{ px: { xs: 0, sm: 2, md: 3 } }}>
         {!queryLoading && items.length == 0 ? (
@@ -80,8 +84,6 @@ export default function Inventory() {
             items={items}
             handleDeleteItem={handleModalOpen}
             loading={queryLoading}
-            filters={filters}
-            setFilters={setFilters}
           ></ItemsTable>
         )}
       </Container>

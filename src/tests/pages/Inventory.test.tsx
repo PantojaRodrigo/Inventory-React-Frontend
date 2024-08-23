@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import Inventory from "../../pages/Inventory";
-import { GET_ITEMS_WITH_SEARCH } from "../../queries";
+import {GET_FILTERED_ITEMS, GET_ITEMS_WITH_SEARCH} from "../../queries";
 import { useSearch } from "../../hooks/useSearch";
 import { useDeleteItem } from "../../hooks/useDeleteItem";
 import Item, { Location } from "../../interfaces/Item";
@@ -126,8 +126,8 @@ const mockItems: Item[] = [
 const mocks = [
   {
     request: {
-      query: GET_ITEMS_WITH_SEARCH,
-      variables: { search: "" },
+      query: GET_FILTERED_ITEMS,
+      variables: { },
     },
     result: {
       data: {
@@ -168,8 +168,8 @@ describe("Inventory Component", () => {
     const mocks = [
       {
         request: {
-          query: GET_ITEMS_WITH_SEARCH,
-          variables: { search: "" },
+          query: GET_FILTERED_ITEMS,
+          variables: { },
         },
         result: {
           data: {
@@ -218,8 +218,8 @@ describe("Inventory Component", () => {
     const errorMocks = [
       {
         request: {
-          query: GET_ITEMS_WITH_SEARCH,
-          variables: { search: "" },
+          query: GET_FILTERED_ITEMS,
+          variables: { },
         },
         error: new GraphQLError("Cannot connect with the server.", {
           extensions: {
@@ -238,7 +238,7 @@ describe("Inventory Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(screen.getByText("NoItems")).toBeInTheDocument();
     });
   });
 });

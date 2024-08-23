@@ -119,9 +119,7 @@ describe("UpdateItem", () => {
     expect(screen.getByLabelText("Location ID")).toHaveValue(initialItem.location.locationId);
     expect(screen.getByLabelText("State")).toHaveValue(initialItem.location.state);
     expect(screen.getByLabelText("Address")).toHaveValue(initialItem.location.address);
-    expect(screen.getByLabelText("Phone number")).toHaveValue(
-      parseInt(initialItem.location.phoneNumber)
-    );
+    expect(screen.getByLabelText("Phone number")).toHaveValue(initialItem.location.phoneNumber);
   });
 
   test("renders the ID field but disabled", async () => {
@@ -163,11 +161,12 @@ describe("UpdateItem", () => {
   test("updates the item correctly", async () => {
     setup("/items");
 
-    await waitFor(() => {
-      expect(screen.getByText("Showing 1 items")).toBeInTheDocument();
-    });
-    expect(screen.getByText(/New Item/i)).toBeInTheDocument();
-    fireEvent.click(screen.getAllByLabelText(/update/i)[0]);
+    await waitFor(()=>{
+      screen.findByText("Showing 1 items");
+      screen.findByText(/New Item/i);
+    })
+
+    fireEvent.click((await screen.findAllByLabelText(/update/i))[0]);
     await waitFor(() => {
       expect(screen.getByText("Update Item")).toBeInTheDocument();
     });

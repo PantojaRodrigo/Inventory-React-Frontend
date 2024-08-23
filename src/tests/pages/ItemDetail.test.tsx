@@ -68,7 +68,7 @@ describe("ItemDetail component", () => {
 
     expect(screen.getByText("ID:1")).toBeInTheDocument();
     expect(screen.getByText("This is a test item")).toBeInTheDocument();
-    expect(screen.getByText("Location:")).toBeInTheDocument();
+    expect(screen.getByText("LOCATION")).toBeInTheDocument();
     expect(screen.getByText("ID: 100")).toBeInTheDocument();
     expect(screen.getByText("Address:")).toBeInTheDocument();
     expect(screen.getByText("123 Test St")).toBeInTheDocument();

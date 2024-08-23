@@ -1,18 +1,12 @@
-import React, {ChangeEvent, Dispatch} from "react";
+import React, {ChangeEvent} from "react";
 import {
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Typography
 } from "@mui/material";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import { Link } from "react-router-dom";
-import SearchField from "../components/SearchField";
 import {FilterList} from "@mui/icons-material";
 import FilterField from "./FilterField";
 import {useQuery} from "@apollo/client";
@@ -41,12 +35,11 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
     console.log(filters)
   }
   const handleToggleFilterIcon = () => {
-    // e.preventDefault();
     setFilterVisible(!filterVisible);
     setFilters({id:"", name: "", state: ""});
   }
 
-  const {data, loading, error} = useQuery(GET_STATES);
+  const {data} = useQuery(GET_STATES);
 
   return (
     <Grid
@@ -57,14 +50,17 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
       spacing={1}
       marginY={1}
     >
-      <Grid item xs={10} sm={10} md={10} minWidth="100px" sx={{ my: "auto" }}>
+      <Grid item
+        xs={9} sm={10} md={10}
+        minWidth="100px"
+            sx={{ my: "auto" }}>
         {!queryLoading && (
           <Typography variant="h6" gutterBottom marginY="auto">
             Showing {itemsLength} items
           </Typography>
         )}
       </Grid>
-      <Grid item xs={1} sm={1} md={1} lg={1}>
+      <Grid item xs={1.5} sm={1} md={1} lg={1}>
         <IconButton
           aria-label="filter"
           onClick={handleToggleFilterIcon}
@@ -72,7 +68,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
             <FilterList />
         </IconButton>
       </Grid>
-      <Grid item xs={1} sm={1} md={1} lg={1}>
+      <Grid item xs={1.5} sm={1} md={1} lg={1}>
         <Link to="newItem">
           <Fab
             color="primary"
@@ -86,7 +82,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
       </Grid>
       {filterVisible && (
         <>
-          <Grid item xs={4} sm={4} md={4} lg={4}>
+          <Grid item xs={12} sm={4}>
             <FilterField
               name={"id"}
               label={"Filter By Id"}
@@ -94,7 +90,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
               onChange={handleOnFilterChange}
             />
           </Grid>
-          <Grid item xs={4} sm={4} md={4} lg={4}>
+          <Grid item xs={12} sm={4}>
             <FilterField
               name={"name"}
               label={"Filter By Name"}
@@ -102,13 +98,13 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({ itemsLength, queryLoa
               onChange={handleOnFilterChange}
             />
           </Grid>
-          <Grid item xs={4} sm={4} md={4} lg={4}>
+          <Grid item xs={12} sm={4}>
             <FilterField
               name={"state"}
               label={"Filter By State"}
               value={filters.state}
               onChange={handleOnFilterChange}
-              options={data.states}
+              options={data?.states || []}
             />
           </Grid>
         </>

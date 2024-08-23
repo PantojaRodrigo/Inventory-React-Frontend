@@ -15,7 +15,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { Link, useNavigate } from "react-router-dom";
-import Item from "../interfaces/Item.jsx";
+import Item, {Location} from "../interfaces/Item.jsx";
 import { TableHead, TableSortLabel } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -81,20 +81,16 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 export default function ItemsTable({
   items,
   handleDeleteItem,
-  loading,
-  filters,
-  setFilters
+  loading
 }: {
   items: Item[];
   handleDeleteItem: Function;
   loading: boolean;
-  filters: FiltersProps;
-  setFilters: Dispatch<FiltersProps>;
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof Item>("itemId");
+  const [orderBy, setOrderBy] = React.useState<keyof Item | keyof Location>("itemId");
   const navigate = useNavigate();
   console.log(">>Renderizando Tabla.tsx");
 
@@ -111,16 +107,24 @@ export default function ItemsTable({
     setPage(0);
   };
 
-  const handleRequestSort = (property: keyof Item) => {
+  const handleRequestSort = (property: keyof Item | keyof Location) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
   const sortedItems = React.useMemo(() => {
+
     return items.slice().sort((a, b) => {
-      if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
-      if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+      if (orderBy in a.location) {
+        const key = orderBy as keyof Location;
+        if (a.location[key] < b.location[key]) return order === "asc" ? -1 : 1;
+        if (a.location[key] > b.location[key]) return order === "asc" ? 1 : -1;
+      } else {
+        const key = orderBy as keyof Item;
+        if (a[key] < b[key]) return order === "asc" ? -1 : 1;
+        if (a[key] > b[key]) return order === "asc" ? 1 : -1;
+      }
       return 0;
     });
   }, [items, order, orderBy]);
@@ -133,7 +137,13 @@ export default function ItemsTable({
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ overflow: "visible" }}>
+      <TableContainer
+          component={Paper}
+          sx={{
+            overflow: "auto",
+            height: 'auto',
+          }}
+      >
         <Table aria-label="custom pagination table" stickyHeader size="small" padding="none">
           <TableHead>
             <TableRow className={styles.tableHeader}>
@@ -202,10 +212,35 @@ export default function ItemsTable({
                   ) : null}
                 </TableSortLabel>
               </TableCell>
+              <TableCell
+                  align="left"
+                  style={{ cursor: "pointer" }}
+                  sortDirection={orderBy === "state" ? order : false}
+                  sx={{
+                    display: { xs: "none", md: "table-cell" },
+                  }}
+              >
+                <TableSortLabel
+                    active={orderBy === "state"}
+                    direction={orderBy === "state" ? order : "asc"}
+                    onClick={() => handleRequestSort("state")}
+                >
+                  Location State
+                  {orderBy === "state" ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === "desc" ? "sorted descending" : "sorted ascending"}
+                      </Box>
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
               <TableCell align="right" sx={{ width: 56 }}></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              mb: '100px'
+            }}
+          >
             {loading ? (
               <TableRowsLoader rowsNum={5} />
             ) : (
@@ -235,6 +270,13 @@ export default function ItemsTable({
                   >
                     {item.description}
                   </TableCell>
+                  <TableCell
+                      sx={{ display: { xs: "none", md: "table-cell" } }}
+                      onClick={() => navigate(`${item.itemId}`)}
+                      align="left"
+                  >
+                    {item.location.state}
+                  </TableCell>
                   <TableCell align="right" sx={{ width: 80 }}>
                     <Link to={`/items/${item.itemId}/newItem`}>
                       <IconButton aria-label="update" className={styles.rotateOnHover}>
@@ -253,14 +295,17 @@ export default function ItemsTable({
                 </TableRow>
               ))
             )}
-
             {emptyRows > 0 && (
               <TableRow style={{ height: 40.67 * emptyRows }}>
                 <TableCell colSpan={6} />
               </TableRow>
             )}
           </TableBody>
-          <TableFooter>
+          <TableFooter
+            sx={{
+              bgcolor: '#fff',
+            }}
+          >
             <TableRow>
               <TablePagination
                 sx={{ pl: 0 }}
