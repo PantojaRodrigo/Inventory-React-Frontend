@@ -1,5 +1,5 @@
 import React, { act } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 //import "@testing-library/jest-dom/extend-expect";
 import {
   createMemoryRouter,
@@ -7,21 +7,42 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import InventoryHeader from "../../components/InventoryHeader";
+import {MockedProvider} from "@apollo/client/testing";
 import SearchField from "../../components/SearchField";
+import {FiltersProps} from "../../pages/Inventory";
+import {GET_STATES} from "../../queries";
+
 
 jest.mock("../../components/SearchField", () => () => <div>SearchField</div>);
 
+const apolloMocks = [
+  {
+    request: {
+      query: GET_STATES,
+    },
+    result: {
+      data: {
+        states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California'],
+      },
+    },
+  },
+];
+
 describe("InventoryHeader component", () => {
-  const mockSearch = jest.fn();
+  const filters = {id:'', name:'', state:''}
+  const setFilters = jest.fn();
 
   test("displays the number of items when queryLoading is false", () => {
     render(
       <Router>
-        <InventoryHeader
-          itemsLength={5}
-          queryLoading={false}
-          search={mockSearch}
-        />
+        <MockedProvider>
+          <InventoryHeader
+            itemsLength={5}
+            queryLoading={false}
+            filters={{id:"", name:"", state:""}}
+            setFilters={setFilters}
+          />
+        </MockedProvider>
       </Router>
     );
 
@@ -32,11 +53,14 @@ describe("InventoryHeader component", () => {
   test("does not display the number of items when queryLoading is true", () => {
     render(
       <Router>
-        <InventoryHeader
-          itemsLength={5}
-          queryLoading={true}
-          search={mockSearch}
-        />
+        <MockedProvider>
+          <InventoryHeader
+            itemsLength={5}
+            queryLoading={true}
+            filters={filters}
+            setFilters={setFilters}
+          />
+        </MockedProvider>
       </Router>
     );
 
@@ -44,7 +68,7 @@ describe("InventoryHeader component", () => {
     expect(itemsText).not.toBeInTheDocument();
   });
 
-  test("renders the SearchField component", () => {
+  test("renders the SearchField component", async() => {
     const routes = [
       {
         path: "/",
@@ -52,7 +76,8 @@ describe("InventoryHeader component", () => {
           <InventoryHeader
             itemsLength={5}
             queryLoading={false}
-            search={mockSearch}
+            filters={filters}
+            setFilters={setFilters}
           />
         ),
       },
@@ -60,10 +85,21 @@ describe("InventoryHeader component", () => {
     const router = createMemoryRouter(routes, {
       initialEntries: ["/"],
     });
-    render(<RouterProvider router={router} />);
+    render(
+      <MockedProvider mocks={apolloMocks} addTypename={false}>
+        <RouterProvider router={router} />
+      </MockedProvider>
+    );
 
-    const searchField = screen.getByText(/SearchField/i);
-    expect(searchField).toBeInTheDocument();
+    act(() => {
+        fireEvent.click(screen.getByRole("button", { name: /filter/i }));
+    })
+    const idSearch = await screen.findByRole('searchbox', {name: 'id'});
+    const nameSearch = await screen.findByRole('searchbox', {name: 'name'});
+    const stateSearch = await screen.findByRole('combobox');
+    expect(idSearch).toBeInTheDocument();
+    expect(nameSearch).toBeInTheDocument();
+    expect(stateSearch).toBeInTheDocument();
   });
 
   test("renders the add button with a link to newItem", () => {
@@ -74,7 +110,8 @@ describe("InventoryHeader component", () => {
           <InventoryHeader
             itemsLength={5}
             queryLoading={false}
-            search={mockSearch}
+            filters={filters}
+            setFilters={setFilters}
           />
         ),
       },
@@ -82,7 +119,11 @@ describe("InventoryHeader component", () => {
     const router = createMemoryRouter(routes, {
       initialEntries: ["/"],
     });
-    render(<RouterProvider router={router} />);
+    render(
+      <MockedProvider>
+        <RouterProvider router={router} />
+      </MockedProvider>
+    );
 
     const addButton = screen.getByRole("button", { name: /add/i });
     expect(addButton).toBeInTheDocument();

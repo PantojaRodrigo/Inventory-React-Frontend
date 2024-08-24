@@ -469,12 +469,12 @@ describe("NewItem", () => {
       expect(screen.queryByText("Do you want to keep adding items?")).toBeNull();
     });
 
-    expect(screen.getByLabelText("ID")).toHaveValue(null);
+    expect(screen.getByLabelText("ID")).not.toHaveValue();
     expect(screen.getByLabelText("Item Name")).toHaveValue("");
     expect(screen.getByLabelText("Item Description")).toHaveValue("");
     expect(screen.getByLabelText("Location ID")).toHaveValue(null);
     expect(screen.getByLabelText("State")).toHaveValue("");
     expect(screen.getByLabelText("Address")).toHaveValue("");
-    expect(screen.getByLabelText("Phone number")).toHaveValue(null);
+    expect(screen.getByLabelText("Phone number")).not.toHaveValue();
   });
 });

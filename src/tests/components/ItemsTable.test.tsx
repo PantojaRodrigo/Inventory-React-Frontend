@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import ItemsTable from "../../components/ItemsTable";
 import Item, { Location } from "../../interfaces/Item";
+
 const location: Location[] = [
   {
     locationId: 1,
